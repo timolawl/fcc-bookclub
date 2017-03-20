@@ -1,0 +1,444 @@
+$primary-color: #024059; // darkteal //#011C40; // darkblue #add8e6; // lightblue
+$secondary-color: #999; // gray #808080; // gray
+$highlight-color: #F29D35; // lamplight #f15a29; // was orange
+$background-color: #011C40; // darkblue
+
+// z-index values:
+/*
+$base-layer: 1;
+$mainbox-layer: 10;
+$overlay-layer: 100;
+$modal-layer: 1000;
+*/
+
+$zindex: (
+  modal:    9000,
+  overlay:  8000,
+  mainbox:  7000
+);
+
+/********************************************************/
+// helpers
+.visibility--show {
+  visibility: visible !important;
+}
+
+.visibility--hide {
+  visibility: hidden !important;
+}
+
+.display--show {
+  display: initial !important;
+}
+
+.display--hide {
+  display: none !important;
+}
+
+
+/********************************************************/
+
+*, :before, :after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  //  font-family: Roboto;
+}
+
+a {
+  /*
+    &:link { // specificity is 0011 here
+        text-decoration: none;
+        color: $secondary-color;
+    }
+    */
+  // doing the following makes the specificity 0001 so as to not override
+  // class-based styling
+  text-decoration: none;
+  color: $secondary-color;
+  transition: color 0.25s ease-out; 
+
+  &:visited {
+      color: $secondary-color;
+  }
+  &:hover {
+      color: $highlight-color;
+  }
+  &:active {
+      color: $highlight-color;
+  }
+}
+
+
+body {
+  background: $background-color;
+}
+
+section { // by default let section take up 80% width of the body
+  width: 80%;
+  max-width: 960px;
+  margin: 1rem auto;
+}
+
+
+button {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+
+/********************************************************/
+//
+
+/********************************************************/
+// foundation overrides
+
+p {
+  line-height: 1rem;
+  font-size: 0.9rem;
+}
+
+.badge {
+  padding: 0.5em;
+  vertical-align: middle;
+  
+  &.primary {
+    background-color: $primary-color; // $primary-color;
+  }
+
+}
+
+.button {
+  margin: 0;
+  &.secondary {
+    background-color: $secondary-color;
+    &:hover {
+      background-color: $highlight-color;
+    }
+  }
+  &.success {
+   background-color: $highlight-color;
+   &:hover {
+    background-color: $secondary-color;
+   }
+  }
+}
+
+.callout {
+  background-color: $primary-color;
+  //border: 1px solid $highlight-color; //  #fefefe;
+  border: none;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.card {
+  background-color: $primary-color;
+  border: none;
+  margin: 0.5rem;
+}
+
+.column, .columns {
+  padding: 0;
+}
+
+.img-thumbnail {
+  margin-bottom: 0.5rem;
+}
+
+.input-group {
+  margin-bottom: 0;
+}
+
+.row {
+  max-width: none;
+}
+
+
+/********************************************************/
+// personal classes
+// overlay
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: #000;
+  opacity: 0.5;
+  z-index: map-get($zindex, overlay); // show mainbox and search results
+}
+
+.modal {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 2rem 6rem 4rem;
+  height: auto;
+  z-index: map-get($zindex, modal); // show over everything else
+  background: $primary-color;
+  &--title {
+    font-family: Bevan;
+    font-size: 1.5rem;
+    color: $secondary-color;
+    margin-bottom: 2rem;
+  }
+}
+
+.mainbox {
+  position: fixed;
+  z-index: map-get($zindex, mainbox); // show over the results
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(80% - 2 * 0.5rem);
+  max-width: calc(720px - 2 * 0.5rem);
+
+  &--top {
+    top: 0;
+    left: 0;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  &__input { // subcontainer of form, parent container of mainbox__search items
+  //  display: inline-block;
+  }
+
+  &__search {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 720px;
+    &--top {
+      margin: 0;
+      display: inline-block;
+      vertical-align: middle;
+      max-width: calc(720px - 128px); // to accommodate for the login button
+    }
+  }
+
+  &__title {
+    padding: 0;
+    font-family: Bevan;
+    font-size: 2rem;
+    line-height: 2.5rem;
+    color: $highlight-color;
+
+    &--nc {
+      color: $secondary-color;
+    }
+
+    &--top {
+      
+    }
+  }
+
+  &__title-row {
+    &--top {
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0 1rem;
+    }
+  }
+
+  &__subtitle-row {
+    &--fcc {
+      font-size: 0.8rem;
+      color: $secondary-color; // $highlight-color; //  #D9B282;
+    }
+  }
+
+  &__log {
+    &-row {
+      // main page only
+      margin-top: 0.5rem;
+      &--top {
+        display: inline-block;
+      }
+    }
+    &-button {
+      &--main {
+        margin-left: 50%;
+        transform: translateX(-50%);
+      }
+      &--top {
+        vertical-align: middle;
+        margin: 0;
+        margin-left: 1.5rem; 
+      }
+    }
+  }
+
+  &__login-details {
+    font-size: 0.8rem;
+    display: inline-block;
+    color: $secondary-color;
+    &--top {
+      @media (min-width: 1200px) {
+        margin-left: 1.5rem;
+      }
+      @media (max-width: 1199px) {
+        display: none;
+      }
+    }
+  }
+}
+
+@keyframes rotation {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+
+
+.bar { 
+  &-list { // section for entire bar list
+    width: 80%;
+    max-width: 960px;
+    margin: 1rem auto;
+    // at the moment to be of a certain height
+    margin-top: calc(72px + 0.5rem); // 40px base top-bar height + 12px top/bottom padding = 72px;
+    &__loader {
+      width: 10%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      //transform: translate(-50%, -50%);
+      animation-name: rotation;
+      animation-duration: 3s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      transform-origin: 50% 50%;
+
+     
+      .ct0, .ct1 {
+        stroke: #999;
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-miterlimit: 10;
+      }
+      .ct0 {
+        fill: none;
+      }
+      .ct1 {
+        fill: none;
+      }
+    }
+  }
+
+  
+  &__title {
+    margin-bottom: 0;
+    //color: $highlight-color;
+    font-weight: bold;
+  }
+  &__review {
+    color: $secondary-color;
+  }
+  &__going {
+    &--text {
+      margin-left: 0.25em;
+      vertical-align: middle;
+    }  
+  }
+  
+  &__attending {
+    background-color: $highlight-color !important; // have to do this or make it an id to override foundation double class specificity
+  }
+
+}
+
+.masonry-element, .masonry-element--sizer {
+  width: 33.3%;
+}
+
+.marker {
+  height: 2rem;
+  width: 2rem;
+  vertical-align: text-bottom;
+}
+
+.social-login {
+  &__button {
+    color: #fff;
+    padding: 0.5rem;
+    //margin: 1rem;
+    display: block;
+    margin: 0 auto 1rem;
+    width: 220px;
+    text-align: left;
+    transition: background-color 0.25s ease-out;
+
+    &--twitter {
+      background-color: #1DA1F2;
+      &:hover {
+        background-color: darken(#1DA1F2, 10%);
+      }
+    }
+
+    &--facebook {
+      background-color: #3B5998;
+      &:hover {
+        background-color: darken(#3B5998, 10%);
+      }
+    }
+  }
+
+  &__icon {
+  
+    &--twitter {
+      margin-right: 0.25rem;
+      width: 32px;
+    }
+    &--facebook {
+      margin-right: 0.25rem;
+      width: 32px;
+    }
+  }
+  
+  &__vertical-bar {
+    display: inline-block;
+    width: 1px;
+    height: 32px;
+    background-color: white;
+    vertical-align: middle;
+  }
+
+  &__text {
+    display: inline-block;
+    //width: 
+    &--twitter {
+      width: 150px; // to match facebook's
+      text-align: center;
+      margin-left: 0.5rem; 
+    }
+    &--facebook {
+      margin-left: 0.5rem;
+    }
+  }
+
+  &__close {
+    
+  }
+}
+
+
+
+/********************************************************/
+// footer
+footer {
+  color: $secondary-color;  
+  text-align: center;
+  margin: 2rem auto;
+}
+
+.footer--unsearched {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+}
+/********************************************************/

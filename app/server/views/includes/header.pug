@@ -1,0 +1,52 @@
+doctype html
+html(lang='en')
+  head
+    title bar none., a Free Code Camp Project
+    script(src='/static/js/pre.bundle.js')
+    link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Montserrat|Bevan|Roboto')
+    link(rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.1/css/foundation.min.css' integrity='sha256-itWEYdFWzZPBG78bJOOiQIn06QCgN/F0wMDcC4nOhxY=' crossorigin='anonymous')
+    link(rel='stylesheet' href='/static/css/style.css')
+  body
+    .modal.display--hide(class='text-center')
+      .modal--title Log In
+      form(method='GET')
+        button.social-login__button.social-login__button--twitter(type='submit' formaction='/login/twitter')
+          img.social-login__icon.social-login__icon--twitter(src='/static/img/twitter.svg')
+          .social-login__vertical-bar
+          .social-login__text.social-login__text--twitter Log in with Twitter
+        button.social-login__button.social-login__button--facebook(type='submit' formaction='/login/facebook')
+          img.social-login__icon.social-login__icon--facebook(src='/static/img/facebook.svg')
+          .social-login__vertical-bar
+          .social-login__text.social-login__text--facebook Log in with Facebook
+      button.social-login__close(class='button secondary') Close
+    section.mainbox(class='callout')
+      .mainbox__title-row(class='row')
+        div(class='medium-8 large-8 column')
+          .mainbox__title.mainbox__title--nc(class='text-left') Nightlife Coordinator
+        div(class='medium-4 large-4 column')
+          .mainbox__title.mainbox__title--bn(class='text-right') bar none.
+      .mainbox__title-row--top.display--hide(class='row')
+        .mainbox__title.mainbox__title--bn(class='text-left')
+          a.bn-logo--link(href='/') bar none.
+      .mainbox__search
+        .mainbox__input(class='input-group')
+          input.mainbox__search--input(type='text' placeholder='Search for bars around...' class='input-group-field')
+          a.mainbox__search--submit(class='input-group-button button secondary') Search
+      .mainbox__log-row--top.display--hide
+        if loggedIn === 'false'  
+          button.mainbox__log-button.mainbox__log-button--top(type='button' class='button secondary' role='button') Log In
+        if loggedIn === 'true'
+          button.mainbox__log-button.mainbox__log-button--top(type='submit' class='button secondary' role='button') Log Out
+      .mainbox__login-details.mainbox__login-details--top.display--hide Logged in as #{displayName} via #{provider}.
+      .mainbox__subtitle-row(class='text-center')
+        span.mainbox__subtitle-row--fcc(class='text-center') A 
+          a(href='https://www.freecodecamp.com') Free Code Camp 
+        span.mainbox__subtitle-row--fcc Project
+        br
+      .mainbox__log-row
+        if loggedIn === 'false'
+          button.mainbox__log-button.mainbox__log-button--main(type='button' class='button secondary' role='button') Log In
+        if loggedIn === 'true'
+          button.mainbox__log-button.mainbox__log-button--main(type='submit' class='button secondary' role='button') Log Out
+          .mainbox__login-details Logged in as #{displayName} via #{provider}.
+    .overlay.visibility--hide
