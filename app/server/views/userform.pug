@@ -1,0 +1,34 @@
+include /includes/header.pug
+.body
+  .title
+    case path
+      when 'signup'
+        span Sign Up
+      when 'login'
+        span Log In
+      when 'reset'
+        span Reset Password
+  - if (message.length)
+    .message= message
+  form.form(method='post')
+    if path == 'signup'
+      label.form__label(for='name') Username
+      input.form__input.form__input--name(type='text' name='username' pattern="^(?:\\w+[\\w.'-]*(?: [\\w.'-]+)*){1,50}$" required)
+    label.form__label(for='email') Email
+    input.form__input.form__input--email(type='email' name='email' pattern='^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9]+\.[a-zA-Z0-9-.]+$' maxlength='100' required)
+    if path != 'reset'
+      label.form__label(for='password') Password
+      input.form__input.form__input--password(type='password' name='password' pattern='^.{6,50}$' required)
+    if path == 'signup'
+      label.form__label(for='confirm') Confirm Password
+      input.form__input.form__input--confirm(type='password' name='confirm' pattern='^.{6,50}$' required)
+    case path
+      when 'signup'
+        input.form__submit(type='submit' formaction='/signup' value='Sign Up')
+      when 'login'
+        input.form__submit(type='submit' formaction='/login' value='Log In')
+      when 'reset'
+        input.form__submit(type='submit' formaction='/reset' value='Reset Password')
+    if path == 'login'
+      a.reset(href='/reset') Reset password
+include /includes/footer.pug

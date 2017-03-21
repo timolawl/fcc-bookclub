@@ -1,21 +1,10 @@
-$primary-color: #024059; // darkteal //#011C40; // darkblue #add8e6; // lightblue
-$secondary-color: #999; // gray #808080; // gray
-$highlight-color: #F29D35; // lamplight #f15a29; // was orange
-$background-color: #011C40; // darkblue
+$primary-color: #add8e6; // lightblue
+$secondary-color: #808080; // gray
+$highlight-color: #f15a29; // was orange
 
-// z-index values:
-/*
-$base-layer: 1;
-$mainbox-layer: 10;
-$overlay-layer: 100;
-$modal-layer: 1000;
-*/
+// $paths: index, signup, login, reset;
 
-$zindex: (
-  modal:    9000,
-  overlay:  8000,
-  mainbox:  7000
-);
+$paths: signup, login, createpoll, mypolls, myaccount;
 
 /********************************************************/
 // helpers
@@ -38,407 +27,635 @@ $zindex: (
 
 /********************************************************/
 
+
+
 *, :before, :after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-  //  font-family: Roboto;
+    font-family: Montserrat;
 }
 
 a {
-  /*
-    &:link { // specificity is 0011 here
+    &:link {
         text-decoration: none;
         color: $secondary-color;
     }
-    */
-  // doing the following makes the specificity 0001 so as to not override
-  // class-based styling
-  text-decoration: none;
-  color: $secondary-color;
-  transition: color 0.25s ease-out; 
-
-  &:visited {
-      color: $secondary-color;
-  }
-  &:hover {
-      color: $highlight-color;
-  }
-  &:active {
-      color: $highlight-color;
-  }
+    &:visited {
+        color: $secondary-color;
+    }
+    &:hover {
+        color: $highlight-color;
+    }
+    &:active {
+        color: $highlight-color;
+    }
 }
-
-
-body {
-  background: $background-color;
-}
-
-section { // by default let section take up 80% width of the body
-  width: 80%;
-  max-width: 960px;
-  margin: 1rem auto;
-}
-
 
 button {
-  &:hover {
-    cursor: pointer;
+  outline: none; // removes default button highlighting
+  border: none;
+  &:disabled {
+    color: #999;
   }
 }
 
-
-/********************************************************/
-//
-
-/********************************************************/
-// foundation overrides
-
-p {
-  line-height: 1rem;
-  font-size: 0.9rem;
-}
-
-.badge {
-  padding: 0.5em;
-  vertical-align: middle;
-  
-  &.primary {
-    background-color: $primary-color; // $primary-color;
+input {
+  padding: 0 0.5rem;
+  &[type='submit'] {
+    border: none;
   }
-
+  &[type='button'] {
+    outline: none;
+    border: none;
+  }
+  &:disabled {
+    color: #999;
+  }
 }
 
-.button {
-  margin: 0;
-  &.secondary {
-    background-color: $secondary-color;
+/********************************************************/
+// main nav and banner
+.main-nav {
+    text-align: right;
+    margin-right: 1rem;
+
+    &__list {
+        list-style-type: none;
+        display: inline-block;
+        position: relative; // needed to properly display the dropdown menu.
+    }
+
+    ul a:not([class~='index']) {
+        display: inline-block;
+        padding: 1rem;
+        line-height: 1.2rem; // setting the line-height explicitly might have allowed for exact alignment for the logo. 1 + 1.2 + 1 = 3.2rem
+        width: 100%; // allow for drop down nav bg to reach edge of screen
+    }
+
+    ul.index a.index {
+        background: $primary-color;
+    }
+
+    @each $path in $paths {
+      ul.#{$path} li.#{$path} {
+          background: $primary-color;
+      }
+    }
+
+    &__logo {
+        float: left; // this automatically sets the element to block.
+        margin-left: 1rem;
+        height: 3.2rem;
+        width: 3.2rem;
+    }
+}
+
+.account-nav {
+    & > ul {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%; // allow for drop down nav bg to reach edge of screen
+        text-align: left;
+        display: none;
+    }
+
+    &__list {
+        list-style-type: none;
+        background-color: white;
+    }
+
     &:hover {
-      background-color: $highlight-color;
+        & > ul {
+            display: block;
+        }
     }
-  }
-  &.success {
-   background-color: $highlight-color;
-   &:hover {
-    background-color: $secondary-color;
-   }
-  }
 }
 
-.callout {
-  background-color: $primary-color;
-  //border: 1px solid $highlight-color; //  #fefefe;
-  border: none;
-  margin: 0;
-  vertical-align: middle;
+.main-banner {
+  //  position: relative;
+  //  z-index: 2;
+    background-color: $primary-color;
+    text-align: center;
+    padding: 1rem;
 }
 
-.card {
-  background-color: $primary-color;
-  border: none;
-  margin: 0.5rem;
+// VOTE logo SVG styling
+.vote {
+    &__link {
+        display: inline-block;
+        width: 30%;
+        min-width: 200px;
+        margin-top: -0.5rem;
+    }
+
+    &__fulllogo {
+    }
+
+    &-0 {
+        stroke: #231f20;
+        stroke-width: 12;
+    }
+    &-0, &-1 {
+        fill: none;
+        stroke-miterlimit: 10;
+    }
+
+    &-1 { // checkmark
+        stroke:  #f15a29;
+        stroke-width: 12;
+
+        stroke-dasharray: 500;
+        stroke-dashoffset: 500;
+        animation-name: checkmark;
+        animation-duration: 2s;
+        animation-timing-function: ease-in;
+        animation-fill-mode: forwards;
+    }
+
+    &-2 {
+        stroke-linecap:square;
+    }
+
+    &-2, &-3 {
+        fill: none;
+        stroke: gray;
+        stroke-width: 12;
+        stroke-miterlimit: 10;
+    }
+    // End vote logo svg styling
+
+    &__subtitle {
+        margin-top: -1rem;
+        font-size: 0.8rem;
+        color: $secondary-color;
+    }
+
+    &__description {
+        margin-top: 1rem;
+    }
+
+    &__button {
+        font-size: 1rem;
+        margin-top: 1rem;
+        background: $highlight-color;
+        padding: 0.8rem;
+        border: 2px solid black;
+        //border-radius: 0.5rem;
+        &:hover {
+            cursor: pointer;
+            background-color: darken($highlight-color, 10%);
+        }
+        &:focus {
+            outline: 0;
+        }
+    }
 }
 
-.column, .columns {
-  padding: 0;
+@keyframes checkmark { // checkmark animation
+    from {
+        stroke-dashoffset: 500;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
 }
 
-.img-thumbnail {
-  margin-bottom: 0.5rem;
-}
-
-.input-group {
-  margin-bottom: 0;
-}
-
-.row {
-  max-width: none;
+/********************************************************/
+// body class settings:
+.body {
+    text-align: center;
 }
 
 
 /********************************************************/
-// personal classes
-// overlay
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background: #000;
-  opacity: 0.5;
-  z-index: map-get($zindex, overlay); // show mainbox and search results
-}
-
-.modal {
-  position: fixed;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 2rem 6rem 4rem;
-  height: auto;
-  z-index: map-get($zindex, modal); // show over everything else
-  background: $primary-color;
-  &--title {
-    font-family: Bevan;
+// page titles
+.title {
+    margin: 1rem auto;
     font-size: 1.5rem;
-    color: $secondary-color;
-    margin-bottom: 2rem;
-  }
+    text-align: center;
 }
 
-.mainbox {
-  position: fixed;
-  z-index: map-get($zindex, mainbox); // show over the results
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: calc(80% - 2 * 0.5rem);
-  max-width: calc(720px - 2 * 0.5rem);
 
-  &--top {
-    top: 0;
-    left: 0;
-    transform: none;
-    width: 100%;
-    max-width: 100%;
-  }
+/********************************************************/
+// flash message
+.message {
+    display: inline-block;
+    background: transparentize(red, 0.5);
+    color: darken(red, 25%);
+    padding: 0.5rem;
+    border: 1px solid red;
+}
 
-  &__input { // subcontainer of form, parent container of mainbox__search items
-  //  display: inline-block;
-  }
 
-  &__search {
-    margin: 0 auto;
-    width: 100%;
-    max-width: 720px;
-    &--top {
-      margin: 0;
-      display: inline-block;
-      vertical-align: middle;
-      max-width: calc(720px - 128px); // to accommodate for the login button
+/********************************************************/
+// form (mainly for pollfom and registration, I believe; modal form separate--see below)
+.form {
+    width: 50%;
+    max-width: 1000px;
+    margin-left: 25%;
+    &__label {
+        text-align: initial;
+        display: block;
+        margin: 1rem auto 0.25rem;
+    }
+
+    &__input {
+        margin: 0 auto;
+    //    padding: 0 0.5rem;
+        height: 1.5rem;
+        width: 100%;
+        border: 1px solid $secondary-color;
+        &--options {
+            width: calc(100% - 1.5rem);
+        }
+    }
+
+    &__options {
+        &--option {
+            &:not(:first-of-type) {
+                * {
+                    border-top: none;
+                }
+            }
+        }
+    }
+
+    &__button {
+        &--delete {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            background-color: $highlight-color;
+            border: 1px solid $secondary-color;
+            border-left: none;
+            &:hover {
+                cursor: pointer;
+                background-color: darken($highlight-color, 10%);
+            }
+        }
+
+        &--create { // 'Add Option' button
+            display: block;
+            margin: 1rem auto;
+            width: 100%;
+            height: 1.5rem;
+            background-color: $secondary-color; // changed from #ccc;
+            border: 1px solid $secondary-color;
+            cursor: pointer;
+            &:hover {
+                background-color: darken($secondary-color, 10%);
+            }
+        }
+    }
+
+    &__submit {
+        display: block;
+        margin: 1.5rem auto 0.25rem;
+        width: 100%;
+        height: 1.5rem;
+        background-color: $primary-color;
+        border: 1px solid $primary-color;
+        cursor: pointer;
+        &:hover {
+            background-color: darken($primary-color, 10%);
+        }
+    }
+}
+
+/********************************************************/
+// pollform
+
+
+
+/********************************************************/
+// poll details on front page (also can be for "my polls" section)
+.poll { // may want to rename this as this is only the list elements of the polls
+  &__element {
+
+    &--link {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 80%;
+        max-width: 960px;
+        // will need a min width once the details are filled in
+        height: 50px;
+        border: 4px solid $secondary-color;
+        padding: 0 0.5rem;
+        margin: 0.5rem auto;
+        &:hover {
+            cursor: pointer;
+            background: lighten($secondary-color, 25%);
+        }
+    }
+    &--text {
+      text-align: center;
+      // position: absolute;
+      // top: 50%;
+      // left: 50%;
+      // transform: translate(-50%, -50%);
+    
     }
   }
+}
+
+
+/********************************************************/
+// single poll view
+.created-poll {
+  // segment for the entire section
+  // 1. set width to 80% unless below or above a certain pixel
+  width: 80%;
+  max-width: 960px;
+//  border: 4px solid gray;
+  padding: 2rem;
+  margin: 0 auto; // centering
+  margin-top: 2rem;
+  background: lighten($secondary-color, 25%);
+
 
   &__title {
-    padding: 0;
-    font-family: Bevan;
-    font-size: 2rem;
-    line-height: 2.5rem;
-    color: $highlight-color;
+    margin-bottom: 2rem;  
+  }
 
-    &--nc {
-      color: $secondary-color;
+  &__option {
+    // .created-poll__option // general option buttons styling
+    display: block;
+    margin: 1rem auto;
+    width: 300px;
+    height: 50px;
+    border: 1px solid lighten($secondary-color, 25%);
+    cursor: pointer;
+    &:hover {
+    //  background: darken($color .. );
     }
 
-    &--top {
+
+    &s { // .created-poll__options
+      display: inline-block; //split up the options and the chart 50/50
+      width: 50%;
+  //    background: lightblue;
+      vertical-align: top;
+    }
+
+    &--vote {
+      background: $primary-color;
+      &:hover {
+        background: darken($primary-color, 10%);
+      }
+    }
+
+    &--new-option {
+      background: $secondary-color;
+      &:hover {
+        background: darken($secondary-color, 10%);
+      }
+    }
+
+    &--share {
+      background: $secondary-color;
+      &:hover {
+        background: darken($secondary-color, 10%);
+      }
+
+    }
+ 
+    &--delete {
+      background: $highlight-color;
+      &:hover {
+        background: darken($highlight-color, 10%);
+      }
+    }
+  }
+  
+  &__poll {
+    display: inline-block;
+    width: 50%;
+    background: lighten($secondary-color, 25%);
+
+    &--canvas {
+  //    height: 300px !important;
+  //    width: 300px !important;
+    }
+  }
+
+}
+
+
+/********************************************************/
+// modal
+.modal { // modal box
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  width: 50%;
+  max-width: 640px;
+  min-width: 320px;
+  height: auto;
+  background: #fff;
+  z-index: 100;
+  text-align: center;
+ // padding: 1rem;
+
+  &__overlay { // overlay for dimming the background
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: black;
+    opacity: 0.3;
+  //  transition: 0.3s;
+    
+  }
+
+  // customizations for each modal:
+  &--vote {
+ //   background: lighten($primary-color, 10%);
+  }
+
+  &--new-option {
+ 
+  }
+
+  &--share {
+    // modal box specific customizations for share
+ //   background: lighten($secondary-color, 20%); 
+  }
+
+  &--delete-poll {
+    
+  }
+
+  &__vote {
+    &--dropdown {
+      &-ul {
+     //  background: green; 
+      }
+
+      &-li {
+         
+      }
+    }
+  }
+
+  // specifics for each selection:
+  &__new-option {
+    &--option {
+      width: 80%;
+      min-width: 200px;
+      max-width: 450px;
+    }
+  }
+
+  &__share {
+    // customized elements for share specifics
+    &--link-box {
+      width: 80%;
+      min-width: 200px;
+      max-width: 450px;
+    }
+    &--clipboard-button {
+      height: 18px;
+      width: auto;
+     // background: gray;
+      vertical-align: bottom;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  &__delete {
+    &--yes {
+      display: inline-block;
+      padding: 1rem;
+   //   width: 75px;
+      margin-right: 1.5rem;
+      background: $secondary-color;
+      cursor: pointer;
+      &:hover {
+        background: darken($secondary-color, 10%);
+      }
+    }
+
+    &--no {
+      display: inline-block;
+      padding: 1rem;
+    // width: 75px;
+      margin-left: 1.5rem;
+      background: $secondary-color;
+      cursor: pointer;
+      &:hover {
+        background: darken($secondary-color, 10%);
+      }
+    }
+  }
+
+  // generics
+  &__title {
+    font-size: 1.2rem;
+    padding: 1rem;
+
+    &--vote {
+      background: darken($primary-color, 10%);
+    }
+
+    &--new-option {
+      background: darken($secondary-color, 10%);
+    }
+
+    &--share {
+      // share specifics
+      background: darken($secondary-color, 10%);
+    }
+
+    &--delete-poll {
+      background: darken($highlight-color, 10%);
+    }
+
+  }
+
+  &__body {
+    margin-top: 1rem;
+    &--share {
+      
+    }
+    &--delete-poll {
+      margin-bottom: 1rem;
+    }
+  }
+
+  &__form {
+    &--new-option {
       
     }
   }
 
-  &__title-row {
-    &--top {
-      display: inline-block;
-      vertical-align: middle;
-      margin: 0 1rem;
-    }
-  }
+  &__flash-message {
+    margin: 1rem auto 0;
+    font-size: 0.8rem;
+    color: darken($highlight-color, 10%);
+  } 
 
-  &__subtitle-row {
-    &--fcc {
-      font-size: 0.8rem;
-      color: $secondary-color; // $highlight-color; //  #D9B282;
-    }
-  }
-
-  &__log {
-    &-row {
-      // main page only
-      margin-top: 0.5rem;
-      &--top {
-        display: inline-block;
-      }
-    }
-    &-button {
-      &--main {
-        margin-left: 50%;
-        transform: translateX(-50%);
-      }
-      &--top {
-        vertical-align: middle;
-        margin: 0;
-        margin-left: 1.5rem; 
-      }
-    }
-  }
-
-  &__login-details {
+  &__submit {
     font-size: 0.8rem;
     display: inline-block;
-    color: $secondary-color;
-    &--top {
-      @media (min-width: 1200px) {
-        margin-left: 1.5rem;
-      }
-      @media (max-width: 1199px) {
-        display: none;
-      }
-    }
-  }
-}
-
-@keyframes rotation {
-  0% { transform: translate(-50%, -50%) rotate(0deg); }
-  100% { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-
-
-.bar { 
-  &-list { // section for entire bar list
-    width: 80%;
-    max-width: 960px;
-    margin: 1rem auto;
-    // at the moment to be of a certain height
-    margin-top: calc(72px + 0.5rem); // 40px base top-bar height + 12px top/bottom padding = 72px;
-    &__loader {
-      width: 10%;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      //transform: translate(-50%, -50%);
-      animation-name: rotation;
-      animation-duration: 3s;
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
-      transform-origin: 50% 50%;
-
-     
-      .ct0, .ct1 {
-        stroke: #999;
-        stroke-width: 4;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-        stroke-miterlimit: 10;
-      }
-      .ct0 {
-        fill: none;
-      }
-      .ct1 {
-        fill: none;
-      }
-    }
-  }
-
-  
-  &__title {
-    margin-bottom: 0;
-    //color: $highlight-color;
-    font-weight: bold;
-  }
-  &__review {
-    color: $secondary-color;
-  }
-  &__going {
-    &--text {
-      margin-left: 0.25em;
-      vertical-align: middle;
-    }  
-  }
-  
-  &__attending {
-    background-color: $highlight-color !important; // have to do this or make it an id to override foundation double class specificity
-  }
-
-}
-
-.masonry-element, .masonry-element--sizer {
-  width: 33.3%;
-}
-
-.marker {
-  height: 2rem;
-  width: 2rem;
-  vertical-align: text-bottom;
-}
-
-.social-login {
-  &__button {
-    color: #fff;
-    padding: 0.5rem;
-    //margin: 1rem;
-    display: block;
-    margin: 0 auto 1rem;
-    width: 220px;
-    text-align: left;
-    transition: background-color 0.25s ease-out;
-
-    &--twitter {
-      background-color: #1DA1F2;
-      &:hover {
-        background-color: darken(#1DA1F2, 10%);
-      }
-    }
-
-    &--facebook {
-      background-color: #3B5998;
-      &:hover {
-        background-color: darken(#3B5998, 10%);
-      }
-    }
-  }
-
-  &__icon {
-  
-    &--twitter {
-      margin-right: 0.25rem;
-      width: 32px;
-    }
-    &--facebook {
-      margin-right: 0.25rem;
-      width: 32px;
-    }
-  }
-  
-  &__vertical-bar {
-    display: inline-block;
-    width: 1px;
-    height: 32px;
-    background-color: white;
-    vertical-align: middle;
-  }
-
-  &__text {
-    display: inline-block;
-    //width: 
-    &--twitter {
-      width: 150px; // to match facebook's
-      text-align: center;
-      margin-left: 0.5rem; 
-    }
-    &--facebook {
-      margin-left: 0.5rem;
+    margin: 1rem auto 0;
+    padding: 1rem;
+    background: $primary-color;
+    cursor: pointer;
+    &:hover {
+      background: darken($primary-color, 10%);
     }
   }
 
   &__close {
+    font-size: 0.8rem;
+    margin: 1rem auto;
+    display: inline-block;
+    padding: 1rem;
+    cursor: pointer;
+    background: $secondary-color;
+    &:hover {
+      background: darken($secondary-color, 10%);
+    }
+    
+    &--vote {
+    //  background: darken($primary-color, 10%);
+    }
+
+    &--new-option {
+    //  background: $secondary-color;  
+    }
+  
+    &--share {
+    //  background: $secondary-color;
+    }
+
+    &--delete-poll {
+    //  background: $highlight-color;
+    }
     
   }
+
 }
 
-
+/********************************************************/
+// 404 page not found
+.page-not-found {
+  text-align: center;
+  font-size: 2rem;
+  margin-top: 2rem;
+}
 
 /********************************************************/
 // footer
 footer {
-  color: $secondary-color;  
-  text-align: center;
-  margin: 2rem auto;
+    text-align: center;
+    margin-top: 2rem;
 }
-
-.footer--unsearched {
-  position: fixed;
-  bottom: 0;
-  left: 0; right: 0;
-}
-/********************************************************/

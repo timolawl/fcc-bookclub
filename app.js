@@ -2,7 +2,7 @@
 
 // es6 modules are not natively supported in V8 yet..
 
-// require('dotenv').config(); // loads env vars (don't need in prod)
+require('dotenv').config(); // loads env vars (don't need in prod)
 
 // built-in requires
 const path = require('path'); // for joining paths
@@ -34,7 +34,7 @@ const MongoStore = require('connect-mongo')(session); // move store from mem to 
 const passport = require('passport');
 
 // development requires
-// const morgan = require('morgan'); // allows for every HTTP request to be logged to console
+const morgan = require('morgan'); // allows for every HTTP request to be logged to console
 
 // custom requires
 const port = process.env.PORT || 5000;
@@ -66,7 +66,7 @@ app.use('/static', express.static(path.join(__dirname,'/static')));
 app.use(favicon(path.join(__dirname, '/static/img/favicon.ico')));
 
 
-// app.use(morgan('dev')); // log every request to console.
+app.use(morgan('dev')); // log every request to console.
 
 // configure the session
 const sessionMiddleware = session({

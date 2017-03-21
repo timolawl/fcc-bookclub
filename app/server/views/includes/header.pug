@@ -1,52 +1,40 @@
 doctype html
 html(lang='en')
   head
-    title bar none., a Free Code Camp Project
+    title VOTE, a Free Code Camp Project
     script(src='/static/js/pre.bundle.js')
-    link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Montserrat|Bevan|Roboto')
-    link(rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.1/css/foundation.min.css' integrity='sha256-itWEYdFWzZPBG78bJOOiQIn06QCgN/F0wMDcC4nOhxY=' crossorigin='anonymous')
     link(rel='stylesheet' href='/static/css/style.css')
+    link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Montserrat')
   body
-    .modal.display--hide(class='text-center')
-      .modal--title Log In
-      form(method='GET')
-        button.social-login__button.social-login__button--twitter(type='submit' formaction='/login/twitter')
-          img.social-login__icon.social-login__icon--twitter(src='/static/img/twitter.svg')
-          .social-login__vertical-bar
-          .social-login__text.social-login__text--twitter Log in with Twitter
-        button.social-login__button.social-login__button--facebook(type='submit' formaction='/login/facebook')
-          img.social-login__icon.social-login__icon--facebook(src='/static/img/facebook.svg')
-          .social-login__vertical-bar
-          .social-login__text.social-login__text--facebook Log in with Facebook
-      button.social-login__close(class='button secondary') Close
-    section.mainbox(class='callout')
-      .mainbox__title-row(class='row')
-        div(class='medium-8 large-8 column')
-          .mainbox__title.mainbox__title--nc(class='text-left') Nightlife Coordinator
-        div(class='medium-4 large-4 column')
-          .mainbox__title.mainbox__title--bn(class='text-right') bar none.
-      .mainbox__title-row--top.display--hide(class='row')
-        .mainbox__title.mainbox__title--bn(class='text-left')
-          a.bn-logo--link(href='/') bar none.
-      .mainbox__search
-        .mainbox__input(class='input-group')
-          input.mainbox__search--input(type='text' placeholder='Search for bars around...' class='input-group-field')
-          a.mainbox__search--submit(class='input-group-button button secondary') Search
-      .mainbox__log-row--top.display--hide
-        if loggedIn === 'false'  
-          button.mainbox__log-button.mainbox__log-button--top(type='button' class='button secondary' role='button') Log In
+    nav.main-nav
+      ul(class= path)
+        a.main-nav__logo(href='/').index: img(src='/static/img/checkmark.svg')
         if loggedIn === 'true'
-          button.mainbox__log-button.mainbox__log-button--top(type='submit' class='button secondary' role='button') Log Out
-      .mainbox__login-details.mainbox__login-details--top.display--hide Logged in as #{displayName} via #{provider}.
-      .mainbox__subtitle-row(class='text-center')
-        span.mainbox__subtitle-row--fcc(class='text-center') A 
-          a(href='https://www.freecodecamp.com') Free Code Camp 
-        span.mainbox__subtitle-row--fcc Project
-        br
-      .mainbox__log-row
-        if loggedIn === 'false'
-          button.mainbox__log-button.mainbox__log-button--main(type='button' class='button secondary' role='button') Log In
-        if loggedIn === 'true'
-          button.mainbox__log-button.mainbox__log-button--main(type='submit' class='button secondary' role='button') Log Out
-          .mainbox__login-details Logged in as #{displayName} via #{provider}.
-    .overlay.visibility--hide
+          li.main-nav__list.createpoll: a(href='/createpoll') Create Poll
+          li.main-nav__list.mypolls: a(href='/mypolls') My Polls
+          li.main-nav__list.myaccount.account-nav
+            a(href='#myaccount') My Account
+            ul
+              li.account-nav__list: a(href='#settings') Settings
+              li.account-nav__list: a(href='/logout') Log Out
+        else
+          li.main-nav__list.signup: a(href='/signup') Sign Up
+          li.main-nav__list.login: a(href='/login') Log In
+    section.main-banner
+      a.vote__link(href='/')
+        svg.vote__fulllogo(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 288 96")
+          path.vote-0(d="M19 25h48v48H19z")
+          path.vote-1(d="M19 25L43 49 85 7")
+          path.vote-0(d="M90 25h48v48H90z")
+          path.vote-2(d="M180 25v48")
+          path.vote-2(d="M156 25h48")
+          path.vote-2(d="M270 73h-48V25h48")
+          path.vote-3(d="M222 49h48")
+        .vote__subtitle A Free Code Camp Project
+      if path == 'index'
+        .vote__description Create custom polls with live results.
+      if path == 'index'
+        if loggedIn != 'true'
+          form
+            button.vote__button(formaction='/signup') Sign Up
+
