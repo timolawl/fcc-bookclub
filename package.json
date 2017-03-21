@@ -1,7 +1,7 @@
 {
-  "name": "timolawl-nightlife",
+  "name": "timolawl-bookclub",
   "version": "1.0.0",
-  "description": "Nightlife coordination app, a Free Code Camp full-stack project",
+  "description": "BookSwap, a Free Code Camp full-stack project",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/timolawl/fcc-nightlife.git"
+    "url": "git+ssh://git@github.com/timolawl/fcc-bookclub.git"
   },
   "author": "Tim Chiang <timolawl@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/timolawl/fcc-nightlife/issues"
+    "url": "https://github.com/timolawl/fcc-bookclub/issues"
   },
-  "homepage": "https://github.com/timolawl/fcc-nightlife#readme",
+  "homepage": "https://github.com/timolawl/fcc-bookclub#readme",
   "dependencies": {
     "bcrypt": "^1.0.2",
     "body-parser": "^1.16.1",
