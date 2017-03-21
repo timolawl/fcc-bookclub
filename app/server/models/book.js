@@ -11,9 +11,12 @@ const bookSchema = new mongoose.Schema({
   tradeRequests  : [ { by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } },
                     { trading: { type: Schema.Types.ObjectId, ref: 'Book' } } ],
   completedTrades: [ { transaction: 
-                        { from: { type: Schema.Types.ObjectId, ref: 'User', required: true } },
-                        { to: { type: Schema.Types.ObjectId, ref: 'User', required: true  } },
-                        { time: { type: Date, required: true } } } ]
+                       {
+                         from: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+                         to: { type: Schema.Types.ObjectId, ref: 'User', required: true  },
+                         time: { type: Date, required: true } 
+                       } 
+                    } ]
 });
 
 module.exports = mongoose.model('Book', bookSchema);

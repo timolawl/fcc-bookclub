@@ -2,7 +2,7 @@
 
 const uuid = require('node-uuid'); // nonce creation
 
-const Poll = require('../models/poll');
+const Book = require('../models/book');
 
 
 function controller () {
