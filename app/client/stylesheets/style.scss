@@ -1,6 +1,8 @@
-$primary-color: #add8e6; // lightblue
-$secondary-color: #808080; // gray
-$highlight-color: #f15a29; // was orange
+// color theme: https://color.adobe.com/scratched-book-color-theme-1213201/
+
+$primary-color: #A6A38C; // dark sand    // #add8e6; // lightblue
+$secondary-color: #57493E; // brown // #808080; // gray
+$highlight-color: #316481; // teal // #437DA5; // pastel blue// #f15a29; // was orange
 
 // $paths: index, signup, login, reset;
 
@@ -24,6 +26,18 @@ $paths: signup, login, createpoll, mypolls, myaccount;
   display: none !important;
 }
 
+.align--left {
+  text-align: left !important;
+}
+
+.align--center {
+  text-align: center !important;
+}
+
+.align--right {
+  text-align: right !important;
+}
+
 
 /********************************************************/
 
@@ -33,7 +47,7 @@ $paths: signup, login, createpoll, mypolls, myaccount;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: Montserrat;
+    font-family: 'Cormorant Garamond';
 }
 
 a {
@@ -133,58 +147,70 @@ input {
     }
 }
 
-.main-banner {
+.banner {
   //  position: relative;
   //  z-index: 2;
+  &--index {
     background-color: $primary-color;
-    text-align: center;
     padding: 1rem;
+  }
+  &__subsection {
+    display: inline-block;
+    padding: 1rem;
+    font-size: 2rem;
+    &--index {
+      background-color: #e4ddbd;
+    }
+    &--path {
+      color: $highlight-color;
+      background-color: $primary-color;
+    }
+  }
 }
 
-// VOTE logo SVG styling
-.vote {
+// header title
+.heading { 
     &__link {
-        display: inline-block;
-        width: 30%;
-        min-width: 200px;
-        margin-top: -0.5rem;
+      position: relative;
+      display: inline-block;
+    //    width: 30%;
+    //    min-width: 200px;
+    //    margin-top: -0.5rem;
     }
 
-    &__fulllogo {
+    &__full-logo {
+      font-family: 'Raleway';
+      font-size: 2rem;
+      display: inline-block;
+     /* 
+      &:after {
+        position: absolute;
+        top: 0;
+        right: 0;
+        content: '';
+        height: 93px;
+        width: 40px;
+        background-color: #e4ddbd;
+      }
+      */
     }
 
-    &-0 {
-        stroke: #231f20;
-        stroke-width: 12;
+/*
+    &__arrow {
+      display: inline-block;
+      height: 93px;
+      width: 40px;
+      background-color: #E4DDBD;
     }
-    &-0, &-1 {
-        fill: none;
-        stroke-miterlimit: 10;
-    }
+    */
 
-    &-1 { // checkmark
-        stroke:  #f15a29;
-        stroke-width: 12;
-
-        stroke-dasharray: 500;
-        stroke-dashoffset: 500;
-        animation-name: checkmark;
-        animation-duration: 2s;
-        animation-timing-function: ease-in;
-        animation-fill-mode: forwards;
+    &__sub-header {
+      display: inline-block;
+      font-family: 'Raleway';
+      font-size: 2rem;
+      color: $highlight-color;
+      //vertical-align: top;
     }
-
-    &-2 {
-        stroke-linecap:square;
-    }
-
-    &-2, &-3 {
-        fill: none;
-        stroke: gray;
-        stroke-width: 12;
-        stroke-miterlimit: 10;
-    }
-    // End vote logo svg styling
 
     &__subtitle {
         margin-top: -1rem;

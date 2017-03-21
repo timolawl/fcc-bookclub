@@ -29,6 +29,7 @@ const compression = require('compression'); // compresses req/res
 
 // authentication and its dependency requires
 const bodyParser = require('body-parser');
+const flash = require('connect-flash');
 const session = require('express-session'); // session data is not saved in the cookie itself, just the session ID. Session data is stored server-side.
 const MongoStore = require('connect-mongo')(session); // move store from mem to mongo
 const passport = require('passport');
@@ -82,6 +83,7 @@ app.use(sessionMiddleware);
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 
 
 routes(app, passport); // apparently it doesn't matter if this is before or after the port is set...

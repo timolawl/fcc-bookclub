@@ -77,7 +77,8 @@ module.exports = (app, passport) => {
 */
 
     app.route('/mypolls')
-        .get(isLoggedIn, (req, res) => {
+        .get((req, res) => {
+  //      .get(isLoggedIn, (req, res) => {
             // no need to join a socket room here because at this page, nothing will change at this level
             res.render('mypolls', { loggedIn: 'true', path: 'mypolls' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
         });

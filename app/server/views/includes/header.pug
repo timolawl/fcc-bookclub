@@ -7,7 +7,7 @@ html(lang='en')
     title BookSwap, a Free Code Camp Project
     script(src='/static/js/pre.bundle.js')
     link(rel='stylesheet' href='/static/css/style.css')
-    link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Montserrat')
+    link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Raleway|Cormorant+Garamond')
   body
     nav.main-nav
       ul(class= path)
@@ -23,8 +23,20 @@ html(lang='en')
         else
           li.main-nav__list.signup: a(href='/signup') Sign Up
           li.main-nav__list.login: a(href='/login') Log In
-    section.main-banner
-      a.vote__link(href='/')
+    if path == 'index'
+      section.banner--index.align--center
+        a.heading__link(href='/')
+          .heading__full-logo Book Swap
+    if path == 'mypolls'
+      section
+        a.heading__link(href='/')
+          .banner__subsection.banner__subsection--index Book Swap
+        .banner__subsection.banner__subsection--path My Polls
+      //
+        a.heading__link(href='/')
+          .heading__full-logo Book Swap
+        .heading__sub-header My Polls
+      //
         svg.vote__fulllogo(xmlns="http://www.w3.org/2000/svg" viewBox="0 0 288 96")
           path.vote-0(d="M19 25h48v48H19z")
           path.vote-1(d="M19 25L43 49 85 7")
@@ -34,6 +46,7 @@ html(lang='en')
           path.vote-2(d="M270 73h-48V25h48")
           path.vote-3(d="M222 49h48")
         .vote__subtitle A Free Code Camp Project
+    //
       if path == 'index'
         .vote__description Create custom polls with live results.
       if path == 'index'
