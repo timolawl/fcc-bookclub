@@ -76,17 +76,38 @@ module.exports = (app, passport) => {
         });
 */
 
-    app.route('/mypolls')
+    app.route('/mybooks')
         .get((req, res) => {
   //      .get(isLoggedIn, (req, res) => {
             // no need to join a socket room here because at this page, nothing will change at this level
-            res.render('mypolls', { loggedIn: 'true', path: 'mypolls' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
+            res.render('mybooks', { loggedIn: 'true', path: 'mybooks' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
         });
 
     app.route(/^\/poll\/[0-9a-f-]+$/) // nonce path; I'll need to retrieve the poll from this permalink somehow... this also needs to verify the existence of the path in the server, otherwise display error.
         .get(controller.renderpoll)
         
         .delete(controller.deletepoll);
+
+
+    app.route('/request')
+      .get((req, res) => {
+        res.render('request', { loggedIn: 'true', path: 'request' });
+      });
+
+    app.route('/pending')
+      .get((req, res) => {
+        res.render('pending', { loggedIn: 'true', path: 'pending' });
+      });
+
+    app.route('/completed')
+      .get((req, res) => {
+        res.render('completed', { loggedIn: 'true', path: 'completed' });
+      });
+
+    app.route('/settings')
+      .get((req, res) => {
+        res.render('settings', { loggedIn: 'true', path: 'settings' });
+      });
 
     app.use((req, res) => {
       if (req.isAuthenticated())

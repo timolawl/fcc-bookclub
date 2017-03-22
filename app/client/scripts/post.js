@@ -1,7 +1,7 @@
 'use strict';
 
 // socket io -- the cdnjs script is in the HTML template above this script file
-const host = 'timolawl-voting.herokuapp.com';
+const host = 'timolawl-bookclub.herokuapp.com';
 var socket = io();
 /*
 if (host == location.host) {
@@ -86,7 +86,7 @@ window.onload = function () {
   if (location.pathname.match(/^\/poll\/[0-9a-f-]+$/))
     socket.emit('change room', { room: location.pathname.slice(6) }); // the nonce itself
 
-  if (location.pathname.match(/^\/(?:signup|login|reset|createpoll|mypolls)\/?/i))
+  if (location.pathname.match(/^\/(?:signup|login|reset|createpoll|mybooks)\/?/i))
     socket.emit('leave room', { path: location.pathname.toLowerCase().slice(1) });
 
 /****************/    
