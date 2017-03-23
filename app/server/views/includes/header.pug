@@ -4,14 +4,17 @@ html(lang='en')
     meta(charset='utf-8')
     meta(http-equiv='x-ua-compatible' content='ie=edge')
     meta(name='viewport' content='width=device-width initial-scale=1')
-    title BookSwap, a Free Code Camp Project
+    title Book Swap, a Free Code Camp Project
     script(src='/static/js/pre.bundle.js')
+    link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Sans+Pro|Raleway|Cormorant+Garamond')
     link(rel='stylesheet' href='/static/css/style.css')
-    link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Raleway|Cormorant+Garamond')
   body
     nav.main-nav
       ul(class= path)
-        a.main-nav__logo(href='/').index: img.main-nav__logo--img(src='/static/img/checkmark.svg')
+        //
+          a.main-nav__logo(href='/').index
+            .logo__container
+              img.logo__image(src='/static/img/book.svg')
         if loggedIn === 'true'
           li.main-nav__list.mybooks: a(href='/mybooks') My Books
           li.main-nav__list.dropdown-nav.swaps Swaps
@@ -27,31 +30,39 @@ html(lang='en')
           li.main-nav__list.signup: a(href='/signup') Sign Up
           li.main-nav__list.login: a(href='/login') Log In
     if path == 'index'
-      section.banner__base-layer--index
+      section.base-layer--index
         .banner--index.align--center
-          a.heading__link(href='/')
-            .heading__full-logo 
-              .banner__text Book Swap
+          a.banner__link(href='/')
+            .banner__full-logo 
+              .banner__text.banner__text--pre Book
+              .banner__image: img.banner__image--book(src='/static/img/book.svg')
+              .banner__text.banner__text--post Swap
+          .banner__phrases
+            .banner__phrases--1 Sample Adventures.
+          //
+            .banner__phrases--2 Share Inspirations.
+            .banner__phrases--3 Swap Ideas.
+
     else 
-      section.banner__base-layer
-        a.heading__link(href='/')
-          .banner__subsection.banner__subsection--index 
-            .banner__text Book Swap
+      section.base-layer
+        a.path-bar__link(href='/')
+          .path-bar__subsection.path-bar__subsection--index 
+            .path-bar__text Book Swap
         if path != 'index'
-          .banner__subsection.banner__subsection--path
+          .path-bar__subsection.path-bar__subsection--path
             if path == 'mybooks'
-              .banner__text My Books
+              .path-bar__text My Books
             else if path == 'request'
-              .banner__text Request A Swap
+              .path-bar__text Request A Swap
             else if path == 'pending'
-              .banner__text Pending Swaps
+              .path-bar__text Pending Swaps
             else if path == 'completed'
-              .banner__text Completed Swaps
+              .path-bar__text Completed Swaps
             else if path == 'signup'
-              .banner__text Sign Up
+              .path-bar__text Sign Up
             else if path == 'login'
-              .banner__text Log In
+              .path-bar__text Log In
             else if path == 'settings'
-              .banner__text Settings
+              .path-bar__text Settings
             else
-              .banner__text Page Not Found
+              .path-bar__text Page Not Found

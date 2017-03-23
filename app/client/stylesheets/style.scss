@@ -55,12 +55,14 @@ $paths: mybooks, request, pending, completed, settings, signup, login;
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Cormorant Garamond';
+  font-family: 'Source Sans Pro', sans-serif; // 'Cormorant Garamond';
 }
 
+/*
 section {
   clear: both;
 }
+*/
 
 a {
   &:link {
@@ -81,10 +83,14 @@ a {
 button {
   outline: none; // removes default button highlighting
   border: none;
+  &:hover {
+    cursor: pointer;
+  }
   &:disabled {
     color: #999;
   }
 }
+
 
 input {
   padding: 0 0.5rem;
@@ -97,8 +103,55 @@ input {
   }
   &:disabled {
     color: #999;
+    background: $primary-color;
   }
 }
+
+p {
+  font-family: 'Cormorant Garamond';
+}
+
+
+/********************************************************/
+// foundation add-ins:
+/*
+.input-group {
+  display: table;
+  &-label {
+    display: table-cell;
+    padding: 0 1rem;
+    width: 1%;
+    border: 1px solid #cacaca;
+    background: #cacaca;
+  }
+  &-field {
+    display: table-cell;
+    height: 2.5rem;
+  }
+  &-button {
+    display: table-cell;
+    width: 1%;
+    height: 2.5rem;
+  }
+}
+*/
+
+/*
+// :root needed to override foundation p line height for some reason. 
+:root * {
+  line-height: initial;
+}
+
+body, ul {
+  margin: 0;
+}
+
+.input-group {
+  margin: 0;
+}
+
+*/
+
 
 /********************************************************/
 // main nav and banner
@@ -115,7 +168,7 @@ input {
   ul a:not([class~='index']) {
     display: inline-block;
     padding: 1rem;
-    line-height: 1.2rem; // setting the line-height explicitly might have allowed for exact alignment for the logo. 1 + 1.2 + 1 = 3.2rem
+   // line-height: 1.2rem; // setting the line-height explicitly might have allowed for exact alignment for the logo. 1 + 1.2 + 1 = 3.2rem
     width: 100%; // allow for drop down nav bg to reach edge of screen
   }
 
@@ -129,7 +182,7 @@ input {
     }
     
     @if $path == request {
-      ul.pending li.swaps {
+      ul.request li.swaps {
         background: $primary-color;
       }
     }
@@ -158,54 +211,97 @@ input {
   }
 }
 
+.logo {
+  &__container {
+    
+  }
+}
+
 .dropdown-nav {
   padding: 1rem;
   cursor: default;
 
+  & > ul {
+    z-index: map-get($zindex, dropdown);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 110px;
+    // border: 1px solid $index-color;
+    // width: 100%; // allow for drop down nav bg to reach edge of screen
+    text-align: left;
+    display: none;
+  }
+
+  &__list {
+    list-style-type: none;
+    background-color: $index-color;
+  }
+
+  &:hover {
     & > ul {
-      z-index: map-get($zindex, dropdown);
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 110px;
-      // border: 1px solid $index-color;
-      // width: 100%; // allow for drop down nav bg to reach edge of screen
-      text-align: left;
-      display: none;
+      display: block;
     }
-
-    &__list {
-      list-style-type: none;
-      background-color: $index-color;
-    }
-
-    &:hover {
-      & > ul {
-        display: block;
-      }
-    }
+  }
 }
+
+
+/********************************************************/
+// base layer (laying the background color down for the layer)
+
+.base-layer {
+  height: 64px;
+  background-color: $primary-color;
+  &--index {
+    background-color: $index-color;
+  }
+}
+
+
+
+
+/********************************************************/
+
 
 .banner {
   //  position: relative;
   //  z-index: 2;
-  &__text {
-    font-family: Raleway;
+  &__full-logo {
+  //  vertical-align: middle;
   }
 
-  &__base-layer {
-    height: 64px;
-    background-color: $primary-color;
-    &--index {
-      background-color: $index-color;
+  &__text {
+    font-size: 3rem;
+    font-family: Raleway;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  &__image {
+    display: inline-block;
+    margin: 0 0.5rem;
+    vertical-align: middle;
+
+    &--book {
+      height: 64px;
+      width: 64px;
     }
   }
+
+  &__phrases {
+    margin-top: 1rem;  
+  }
+
 
   &--index {
    // background-color: $primary-color;
     padding: 0.8rem;
   }
+}
 
+/********************************************************/
+// path-bar
+.path-bar {
   &__subsection {
     height: 64px;
     position: relative;
@@ -235,10 +331,24 @@ input {
       //width: calc(100% - 170px); // magic number from the width of the subsection--index
     }
   }
+
+  &__text {
+    font-family: Raleway;
+  }
+
 }
+
+
+/********************************************************/
+
+
+
 
 // header title
 .heading { 
+
+// what is this for?
+
     &__link {
       position: relative;
       display: inline-block;
@@ -295,6 +405,14 @@ input {
     }
 }
 
+// sub header
+.sub-heading {
+  &__phrases {
+    margin-top: 1rem;
+  }
+}
+
+
 /********************************************************/
 
 
@@ -328,7 +446,7 @@ input {
   &__label {
     text-align: initial;
     display: block;
-    margin: 1rem auto 0.25rem;
+    margin: 1rem auto 0.25rem
   }
 
   &__input {
@@ -338,7 +456,7 @@ input {
       width: 100%;
       border: 1px solid $secondary-color;
       &--options {
-          width: calc(100% - 1.5rem);
+        width: calc(100% - 1.5rem);
       }
   }
 
@@ -384,7 +502,7 @@ input {
     display: block;
     margin: 1.5rem auto 0.25rem;
     width: 100%;
-    font-size: 1rem;
+   // font-size: 1rem;
     height: 1.5rem;
     color: $highlight-color;
     background-color: $primary-color;
@@ -395,6 +513,101 @@ input {
     }
   }
 }
+
+
+/********************************************************/
+// container
+.container {
+  &--utilities {
+    margin: 1rem auto;
+    width: 80%;
+    max-width: 960px;
+    border: 1px solid black;
+  }
+  &__sub-container {
+     padding: 1rem;
+     text-align: center;
+    &--search {
+      border-bottom: 1px solid black;
+    }
+    &--preview {
+      text-align: center;
+    }
+  }
+}
+
+
+/********************************************************/
+// search box
+// have to use the root hack for now; border issues
+:root .search {
+  &__label {
+    display: inline-block;
+    height: 1.5rem;
+    border: 1px solid $secondary-color;
+  }
+  &__input {
+    margin: 0 auto;
+    height: 1.5rem;
+    width: calc(100% - 8rem);
+    border-width: 1px 0;
+    border-style: solid;
+    border-color: $secondary-color;
+//    border: 1px 0px solid $secondary-color;
+    display: inline-block;
+  }
+  &__submit {
+    height: 1.5rem;
+    padding: 0 0.5rem;
+    border: 1px solid $secondary-color;
+    background-color: $index-color;
+    display: inline-block;
+    vertical-align: middle;
+    &:hover {
+      background-color: $primary-color;
+    }
+  }
+}
+
+/********************************************************/
+// preview box
+.preview {
+  &__title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  &__author {
+    font-size: 0.9rem;
+    margin-bottom: 1rem; 
+  }
+
+  &__excerpt {
+    text-align: left;
+    text-indent: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  &__permalink {
+    font-size: 0.9rem;
+    text-align: left;
+    font-weight: bold;
+  }
+
+  &__submit {
+    height: 1.5rem;
+    padding: 0 0.5rem;
+    border: 1px solid $secondary-color;
+    background-color: $index-color;
+    display: inline-block;
+    vertical-align: middle;
+    &:hover {
+      background-color: $primary-color;
+    }
+
+  }
+}
+
 
 /********************************************************/
 // bookshelf - wrapper div for displaying book images
