@@ -1,0 +1,21 @@
+// _element.link.scss
+//
+// - base element styling for links
+
+a {
+  &:link {
+    color: map-get($color-stack, font__link--base);
+  }
+
+  &:visited {
+    color: map-get($color-stack, font__link--base);
+  }
+
+  &:hover {
+    color: map-get($color-stack, font__link--selected);
+  }
+
+  &:active {
+    color: map-get($color-stack, font__link--selected);
+  }
+}

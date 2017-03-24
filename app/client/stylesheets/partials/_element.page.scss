@@ -1,0 +1,22 @@
+// _element.page.scss
+//
+// - base element styling for page
+
+html {
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+}
+
+// style input element here to generalize to all input elements
+input {
+  font-size: 12px;
+  height: 2rem;
+  padding: 0 .5rem; // side padding
+
+}
+
+footer {
+  margin-top: 2rem;
+  text-align: center;
+}

@@ -9,42 +9,38 @@ html(lang='en')
     link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Sans+Pro|Raleway|Cormorant+Garamond')
     link(rel='stylesheet' href='/static/css/style.css')
   body
-    nav.main-nav
+    nav.site-nav
       ul(class= path)
-        //
-          a.main-nav__logo(href='/').index
-            .logo__container
-              img.logo__image(src='/static/img/book.svg')
         if loggedIn === 'true'
-          li.main-nav__list.mybooks: a(href='/mybooks') My Books
-          li.main-nav__list.dropdown-nav.swaps Swaps
+          li.site-nav__list.mybooks: a(href='/mybooks') My Books
+          li.site-nav__list.dropdown-nav.swaps Swaps
             ul
               li.dropdown-nav__list: a(href='/request') Request
               li.dropdown-nav__list: a(href='/pending') Pending
               li.dropdown-nav__list: a(href='/completed') Completed
-          li.main-nav__list.dropdown-nav.myaccount My Account
+          li.site-nav__list.dropdown-nav.myaccount My Account
             ul
               li.dropdown-nav__list: a(href='/settings') Settings
               li.dropdown-nav__list.logout: a(href='/logout') Log Out
         else
-          li.main-nav__list.signup: a(href='/signup') Sign Up
-          li.main-nav__list.login: a(href='/login') Log In
+          li.site-nav__list.signup: a(href='/signup') Sign Up
+          li.site-nav__list.login: a(href='/login') Log In
     if path == 'index'
-      section.base-layer--index
-        .banner--index.align--center
+      section.banner
+        .wrapper--banner
           a.banner__link(href='/')
-            .banner__full-logo 
-              .banner__text.banner__text--pre Book
+            .banner__logo 
+              .banner__title.banner__title--pre Book
               .banner__image: img.banner__image--book(src='/static/img/book.svg')
-              .banner__text.banner__text--post Swap
-          .banner__phrases
-            .banner__phrases--1 Sample Adventures.
+              .banner__title.banner__title--post Swap
+          .banner__subtitle
+            .banner__subtitle--1 Sample Adventures.
           //
-            .banner__phrases--2 Share Inspirations.
-            .banner__phrases--3 Swap Ideas.
+            .banner__subtitle--2 Share Inspirations.
+            .banner__subtitle--3 Swap Ideas.
 
     else 
-      section.base-layer
+      section.path-bar
         a.path-bar__link(href='/')
           .path-bar__subsection.path-bar__subsection--index 
             .path-bar__text Book Swap

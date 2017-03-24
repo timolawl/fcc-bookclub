@@ -1,0 +1,15 @@
+// _components.page-body.scss
+//
+//
+
+// page title
+.page-title {
+  margin: 1rem auto;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+
+@import 'blocks/_block.body.index.banner';
+@import 'blocks/_block.body.form';
+@import 'blocks/_block.body.search-book-preview';

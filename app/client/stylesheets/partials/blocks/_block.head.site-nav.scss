@@ -1,0 +1,70 @@
+// _block-site-nav.scss
+//
+// - site navigation styling
+
+.site-nav {
+  margin-right: 1rem;
+  text-align: right;
+
+  &__list {
+    display: inline-block;
+    list-style-type: none;
+    position: relative; // for dropdown menu absolute
+  }
+
+  ul a {
+    display: inline-block;
+    padding: 1rem;
+    width: 100%;
+  }
+
+  @each $path in $paths {
+    @if $path == request {
+      ul.request li.swaps {
+        background: map-get($color-stack, bg--selected);
+      }
+    } @else if $path == pending {
+       ul.pending li.swaps {
+        background: map-get($color-stack, bg--selected);
+      }
+    } @else if $path == completed {
+      ul.completed li.swaps {
+        background: map-get($color-stack, bg--selected);
+      }
+    } @else if $path == settings {
+       ul.settings li.swaps {
+        background: map-get($color-stack, bg--selected);
+      }
+    } @else {
+      ul.#{$path} li.#{$path} {
+        background: map-get($color-stack, bg--selected);
+      }
+    }
+  }
+}
+
+.dropdown-nav {
+  padding: 1rem;
+  cursor: default;
+
+  & > ul {
+    z-index: map-get($z-index, dropdown);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 110px; // explicitly set such that both drop downs are of the same width
+    text-align: left;
+    display: none; // will be displayed when parent is hovered over
+  }
+
+  &__list {
+    list-style-type: none;
+    background-color: map-get($color-stack, bg--base);
+  }
+
+  &:hover {
+    & > ul {
+      display: block;
+    }
+  }
+}

@@ -127,8 +127,8 @@ gulp.task('image', () => {
 });
 
 gulp.task('watch', ['build'], () => {
-    gulp.watch('./app/client/stylesheets/*.scss', ['sass']); // why can't it be '/'?
-    gulp.watch('./app/client/scripts/*.js', ['script']); // will reload twice (if not directly modifying the pre and post js files. Once for the module file, and then again since the changes propagating to the pre/post will trigger the task again).
+    gulp.watch('./app/client/stylesheets/**/*.scss', ['sass']); // why can't it be '/'?
+    gulp.watch('./app/client/scripts/**/*.js', ['script']); // will reload twice (if not directly modifying the pre and post js files. Once for the module file, and then again since the changes propagating to the pre/post will trigger the task again).
   //  gulp.watch('public/*.html', browserSync.reload);
   //  gulp.watch('public/js/**/*.js', browserSync.reload);
   //    gulp.watch('*', browserSync.reload);

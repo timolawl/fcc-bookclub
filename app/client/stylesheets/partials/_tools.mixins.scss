@@ -1,0 +1,10 @@
+// _tools.mixins.scss
+//
+// 
+
+@mixin setBgColorAndHover($base-color) {
+  background-color: $base-color;
+  &:hover {
+    background-color: darken($base-color, 10%);
+  }
+}

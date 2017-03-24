@@ -1,0 +1,967 @@
+// color theme: https://color.adobe.com/scratched-book-color-theme-1213201/
+
+$index-color: #E4DDBD; // light sand
+$primary-color: #A6A38C; // dark sand    // #add8e6; // lightblue
+$secondary-color: #57493E; // brown // #808080; // gray
+$highlight-color: #316481; // teal // #437DA5; // pastel blue// #f15a29; // was orange
+
+$zindex: (
+  dropdown: 9000
+  //modal:    9000,
+  //overlay:  8000,
+  //mainbox:  7000
+);
+
+
+$paths: mybooks, request, pending, completed, settings, signup, login;
+
+/********************************************************/
+// helpers
+.visibility--show {
+  visibility: visible !important;
+}
+
+.visibility--hide {
+  visibility: hidden !important;
+}
+
+.display--show {
+  display: initial !important;
+}
+
+.display--hide {
+  display: none !important;
+}
+
+.align--left {
+  text-align: left !important;
+}
+
+.align--center {
+  text-align: center !important;
+}
+
+.align--right {
+  text-align: right !important;
+}
+
+
+/********************************************************/
+
+
+
+*, *:before, *:after {
+  position: relative;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Source Sans Pro', sans-serif; // 'Cormorant Garamond';
+}
+
+/*
+section {
+  clear: both;
+}
+*/
+
+a {
+  &:link {
+    text-decoration: none;
+    color: $secondary-color;
+  }
+  &:visited {
+    color: $secondary-color;
+  }
+  &:hover {
+    color: $highlight-color;
+  }
+  &:active {
+    color: $highlight-color;
+  }
+}
+
+button {
+  outline: none; // removes default button highlighting
+  border: none;
+  &:hover {
+    cursor: pointer;
+  }
+  &:disabled {
+    color: #999;
+  }
+}
+
+
+input {
+  height: 2rem;
+  padding: 0 0.5rem;
+  font-size: 12px;
+
+  &[type='submit'] {
+    border: none;
+  }
+  &[type='button'] {
+    outline: none;
+    border: none;
+  }
+  &:disabled {
+    color: #999;
+    background: $primary-color;
+  }
+}
+
+p {
+  font-family: 'Cormorant Garamond';
+}
+
+
+/********************************************************/
+// foundation add-ins:
+/*
+.input-group {
+  display: table;
+  &-label {
+    display: table-cell;
+    padding: 0 1rem;
+    width: 1%;
+    border: 1px solid #cacaca;
+    background: #cacaca;
+  }
+  &-field {
+    display: table-cell;
+    height: 2.5rem;
+  }
+  &-button {
+    display: table-cell;
+    width: 1%;
+    height: 2.5rem;
+  }
+}
+*/
+
+/*
+// :root needed to override foundation p line height for some reason. 
+:root * {
+  line-height: initial;
+}
+
+body, ul {
+  margin: 0;
+}
+
+.input-group {
+  margin: 0;
+}
+
+*/
+
+
+/********************************************************/
+// main nav and banner
+.main-nav {
+  text-align: right;
+  margin-right: 1rem;
+
+  &__list {
+    list-style-type: none;
+    display: inline-block;
+    position: relative; // needed to properly display the dropdown menu.
+  }
+
+  ul a:not([class~='index']) {
+    display: inline-block;
+    padding: 1rem;
+   // line-height: 1.2rem; // setting the line-height explicitly might have allowed for exact alignment for the logo. 1 + 1.2 + 1 = 3.2rem
+    width: 100%; // allow for drop down nav bg to reach edge of screen
+  }
+
+  ul.index a.index {
+    background: $index-color;
+  }
+
+  @each $path in $paths {
+    ul.#{$path} li.#{$path} {
+      background: $primary-color;
+    }
+    
+    @if $path == request {
+      ul.request li.swaps {
+        background: $primary-color;
+      }
+    }
+    @if $path == pending {
+      ul.pending li.swaps {
+        background: $primary-color;
+      }
+    }
+    @if $path == completed {
+      ul.completed li.swaps {
+        background: $primary-color;
+      }
+    }
+    @if $path == settings {
+      ul.settings li.myaccount {
+        background: $primary-color;
+      }
+    }
+  }
+
+  &__logo {
+    float: left; // this automatically sets the element to block.
+    margin-left: 1rem;
+    height: 3.2rem;
+    width: 3.2rem;
+  }
+}
+
+.logo {
+  &__container {
+    
+  }
+}
+
+.dropdown-nav {
+  padding: 1rem;
+  cursor: default;
+
+  & > ul {
+    z-index: map-get($zindex, dropdown);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 110px;
+    // border: 1px solid $index-color;
+    // width: 100%; // allow for drop down nav bg to reach edge of screen
+    text-align: left;
+    display: none;
+  }
+
+  &__list {
+    list-style-type: none;
+    background-color: $index-color;
+  }
+
+  &:hover {
+    & > ul {
+      display: block;
+    }
+  }
+}
+
+
+/********************************************************/
+// base layer (laying the background color down for the layer)
+
+.base-layer {
+  height: 64px;
+  background-color: $primary-color;
+  &--index {
+    background-color: $index-color;
+  }
+}
+
+
+
+
+/********************************************************/
+
+
+.banner {
+  //  position: relative;
+  //  z-index: 2;
+  &__full-logo {
+  //  vertical-align: middle;
+  }
+
+  &__text {
+    font-size: 3rem;
+    font-family: Raleway;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  &__image {
+    display: inline-block;
+    margin: 0 0.5rem;
+    vertical-align: middle;
+
+    &--book {
+      height: 64px;
+      width: 64px;
+    }
+  }
+
+  &__phrases {
+    margin-top: 1rem;  
+  }
+
+
+  &--index {
+   // background-color: $primary-color;
+    padding: 0.8rem;
+  }
+}
+
+/********************************************************/
+// path-bar
+.path-bar {
+  &__subsection {
+    height: 64px;
+    position: relative;
+    display: inline-block;
+    padding: 0.8rem;
+    font-size: 2rem;
+
+    &--index {
+      padding-left: 1rem;
+      background-color: $index-color;
+      &:after {
+        position: absolute;
+        top: 0;
+        right: -32px;
+        content: '';
+        height: 0;
+        width: 0;
+        border-left: 32px solid #e4ddbd;
+        border-top: 32px solid transparent;
+        border-bottom: 32px solid transparent;
+      }
+    }
+    &--path {
+      color: $highlight-color;
+      margin-left: 2rem;
+     // background-color: $primary-color;
+      //width: calc(100% - 170px); // magic number from the width of the subsection--index
+    }
+  }
+
+  &__text {
+    font-family: Raleway;
+  }
+
+}
+
+
+/********************************************************/
+
+
+
+
+// header title
+.heading { 
+
+// what is this for?
+
+    &__link {
+      position: relative;
+      display: inline-block;
+    //    width: 30%;
+    //    min-width: 200px;
+    //    margin-top: -0.5rem;
+    }
+
+    &__full-logo {
+      font-family: 'Raleway';
+      font-size: 2rem;
+      display: inline-block;
+    }
+
+    &__sub-header {
+      display: inline-block;
+      font-family: 'Raleway';
+      font-size: 2rem;
+      color: $highlight-color;
+    }
+
+    &__subtitle {
+      margin-top: -1rem;
+      font-size: 0.8rem;
+      color: $secondary-color;
+    }
+
+    &__description {
+      margin-top: 1rem;
+    }
+
+    &__button {
+      font-size: 1rem;
+      margin-top: 1rem;
+      background: $highlight-color;
+      padding: 0.8rem;
+      border: 2px solid black;
+      &:hover {
+        cursor: pointer;
+        background-color: darken($highlight-color, 10%);
+      }
+      &:focus {
+        outline: 0;
+      }
+    }
+}
+
+@keyframes checkmark { // checkmark animation
+    from {
+      stroke-dashoffset: 500;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+}
+
+// sub header
+.sub-heading {
+  &__phrases {
+    margin-top: 1rem;
+  }
+}
+
+
+/********************************************************/
+
+
+
+/********************************************************/
+// page titles
+.title {
+  margin: 1rem auto;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+
+/********************************************************/
+// flash message
+.message {
+  display: inline-block;
+  background: transparentize(red, 0.5);
+  color: darken(red, 25%);
+  padding: 0.5rem;
+  border: 1px solid red;
+}
+
+
+/********************************************************/
+// form (mainly for pollfom and registration, I believe; modal form separate--see below)
+.form {
+  width: 50%;
+  max-width: 1000px;
+  margin-left: 25%;
+  &__label {
+    text-align: initial;
+    display: block;
+    margin: 1rem auto 0.25rem
+  }
+
+  &__input {
+    margin: 0 auto;
+  //    padding: 0 0.5rem;
+      height: 1.5rem;
+      width: 100%;
+      border: 1px solid $secondary-color;
+      &--options {
+        width: calc(100% - 1.5rem);
+      }
+  }
+
+  &__options {
+    &--option {
+      &:not(:first-of-type) {
+        * {
+          border-top: none;
+        }
+      }
+    }
+  }
+
+  &__button {
+    &--delete {
+      display: inline-block;
+      width: 1.5rem;
+      height: 1.5rem;
+      background-color: $highlight-color;
+      border: 1px solid $secondary-color;
+      border-left: none;
+      &:hover {
+        cursor: pointer;
+        background-color: darken($highlight-color, 10%);
+      }
+    }
+
+    &--create { // 'Add Option' button
+      display: block;
+      margin: 1rem auto;
+      width: 100%;
+      height: 1.5rem;
+      background-color: $secondary-color; // changed from #ccc;
+      border: 1px solid $secondary-color;
+      cursor: pointer;
+      &:hover {
+        background-color: darken($secondary-color, 10%);
+      }
+    }
+  }
+
+  &__submit {
+    display: block;
+    margin: 1.5rem auto 0.25rem;
+    width: 100%;
+   // font-size: 1rem;
+    height: 1.5rem;
+    color: $highlight-color;
+    background-color: $primary-color;
+    border: 1px solid $primary-color;
+    cursor: pointer;
+    &:hover {
+        background-color: darken($primary-color, 10%);
+    }
+  }
+}
+
+
+/********************************************************/
+// container
+.container {
+  &--utilities {
+    margin: 1rem auto;
+    width: 80%;
+    max-width: 960px;
+    border: 1px solid black;
+  }
+  &__sub-container {
+     padding: 1rem;
+     text-align: center;
+    &--search {
+      border-bottom: 1px solid black;
+    }
+    &--preview {
+      text-align: center;
+    }
+  }
+}
+
+
+/********************************************************/
+// search box
+// have to use the root hack for now; border issues
+:root .search {
+  &__label {
+    display: inline-block;
+    height: 1.5rem;
+    border: 1px solid $secondary-color;
+    vertical-align: middle;
+    padding: 4px 0.5rem 0;
+    font-size: 11px;
+    background-color: #cacaca;
+  }
+  &__input {
+    margin: 0 auto;
+    height: 1.5rem;
+    width: calc(100% - 8rem);
+    border-width: 1px 0;
+    border-style: solid;
+    border-color: $secondary-color;
+//    border: 1px 0px solid $secondary-color;
+    display: inline-block;
+  }
+  &__submit {
+    height: 1.5rem;
+    padding: 0 0.5rem;
+    border: 1px solid $secondary-color;
+    background-color: $index-color;
+    display: inline-block;
+    vertical-align: middle;
+    &:hover {
+      background-color: $primary-color;
+    }
+  }
+}
+
+/********************************************************/
+// preview box
+.preview {
+  &__title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  &__author {
+    font-size: 0.9rem;
+    margin-bottom: 1rem; 
+  }
+
+  &__excerpt {
+    text-align: left;
+    text-indent: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  &__permalink {
+    font-size: 0.9rem;
+    text-align: left;
+    font-weight: bold;
+  }
+
+  &__submit {
+    height: 1.5rem;
+    padding: 0 0.5rem;
+    border: 1px solid $secondary-color;
+    background-color: $index-color;
+    display: inline-block;
+    vertical-align: middle;
+    &:hover {
+      background-color: $primary-color;
+    }
+
+  }
+}
+
+
+/********************************************************/
+// bookshelf - wrapper div for displaying book images
+.bookshelf {
+  margin: 1rem auto;
+  width: 80%;
+  max-width: 960px;
+  height: auto;
+  border: 1px solid black;
+}
+
+/********************************************************/
+// book
+.book {
+  display: inline-block;
+  border: 1px solid gray;
+  margin: 1rem;
+}
+
+
+/********************************************************/
+// poll details on front page (also can be for "my polls" section)
+.poll { // may want to rename this as this is only the list elements of the polls
+  &__element {
+
+    &--link {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 80%;
+      max-width: 960px;
+      // will need a min width once the details are filled in
+      height: 50px;
+      border: 4px solid $secondary-color;
+      padding: 0 0.5rem;
+      margin: 0.5rem auto;
+      &:hover {
+        cursor: pointer;
+        background: lighten($secondary-color, 25%);
+      }
+    }
+    &--text {
+      text-align: center;
+      // position: absolute;
+      // top: 50%;
+      // left: 50%;
+      // transform: translate(-50%, -50%);
+    
+    }
+  }
+}
+
+
+/********************************************************/
+// single poll view
+.created-poll {
+  // segment for the entire section
+  // 1. set width to 80% unless below or above a certain pixel
+  width: 80%;
+  max-width: 960px;
+//  border: 4px solid gray;
+  padding: 2rem;
+  margin: 0 auto; // centering
+  margin-top: 2rem;
+  background: lighten($secondary-color, 25%);
+
+
+  &__title {
+    margin-bottom: 2rem;  
+  }
+
+  &__option {
+    // .created-poll__option // general option buttons styling
+    display: block;
+    margin: 1rem auto;
+    width: 300px;
+    height: 50px;
+    border: 1px solid lighten($secondary-color, 25%);
+    cursor: pointer;
+    &:hover {
+    //  background: darken($color .. );
+    }
+
+
+    &s { // .created-poll__options
+      display: inline-block; //split up the options and the chart 50/50
+      width: 50%;
+  //    background: lightblue;
+      vertical-align: top;
+    }
+
+    &--vote {
+      background: $primary-color;
+      &:hover {
+        background: darken($primary-color, 10%);
+      }
+    }
+
+    &--new-option {
+      background: $secondary-color;
+      &:hover {
+        background: darken($secondary-color, 10%);
+      }
+    }
+
+    &--share {
+      background: $secondary-color;
+      &:hover {
+        background: darken($secondary-color, 10%);
+      }
+
+    }
+ 
+    &--delete {
+      background: $highlight-color;
+      &:hover {
+        background: darken($highlight-color, 10%);
+      }
+    }
+  }
+  
+  &__poll {
+    display: inline-block;
+    width: 50%;
+    background: lighten($secondary-color, 25%);
+
+    &--canvas {
+  //    height: 300px !important;
+  //    width: 300px !important;
+    }
+  }
+
+}
+
+
+/********************************************************/
+// modal
+.modal { // modal box
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  width: 50%;
+  max-width: 640px;
+  min-width: 320px;
+  height: auto;
+  background: #fff;
+  z-index: 100;
+  text-align: center;
+ // padding: 1rem;
+
+  &__overlay { // overlay for dimming the background
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: black;
+    opacity: 0.3;
+  //  transition: 0.3s;
+    
+  }
+
+  // customizations for each modal:
+  &--vote {
+ //   background: lighten($primary-color, 10%);
+  }
+
+  &--new-option {
+ 
+  }
+
+  &--share {
+    // modal box specific customizations for share
+ //   background: lighten($secondary-color, 20%); 
+  }
+
+  &--delete-poll {
+    
+  }
+
+  &__vote {
+    &--dropdown {
+      &-ul {
+     //  background: green; 
+      }
+
+      &-li {
+         
+      }
+    }
+  }
+
+  // specifics for each selection:
+  &__new-option {
+    &--option {
+      width: 80%;
+      min-width: 200px;
+      max-width: 450px;
+    }
+  }
+
+  &__share {
+    // customized elements for share specifics
+    &--link-box {
+      width: 80%;
+      min-width: 200px;
+      max-width: 450px;
+    }
+    &--clipboard-button {
+      height: 18px;
+      width: auto;
+     // background: gray;
+      vertical-align: bottom;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  &__delete {
+    &--yes {
+      display: inline-block;
+      padding: 1rem;
+   //   width: 75px;
+      margin-right: 1.5rem;
+      background: $secondary-color;
+      cursor: pointer;
+      &:hover {
+        background: darken($secondary-color, 10%);
+      }
+    }
+
+    &--no {
+      display: inline-block;
+      padding: 1rem;
+    // width: 75px;
+      margin-left: 1.5rem;
+      background: $secondary-color;
+      cursor: pointer;
+      &:hover {
+        background: darken($secondary-color, 10%);
+      }
+    }
+  }
+
+  // generics
+  &__title {
+    font-size: 1.2rem;
+    padding: 1rem;
+
+    &--vote {
+      background: darken($primary-color, 10%);
+    }
+
+    &--new-option {
+      background: darken($secondary-color, 10%);
+    }
+
+    &--share {
+      // share specifics
+      background: darken($secondary-color, 10%);
+    }
+
+    &--delete-poll {
+      background: darken($highlight-color, 10%);
+    }
+
+  }
+
+  &__body {
+    margin-top: 1rem;
+    &--share {
+      
+    }
+    &--delete-poll {
+      margin-bottom: 1rem;
+    }
+  }
+
+  &__form {
+    &--new-option {
+      
+    }
+  }
+
+  &__flash-message {
+    margin: 1rem auto 0;
+    font-size: 0.8rem;
+    color: darken($highlight-color, 10%);
+  } 
+
+  &__submit {
+    font-size: 0.8rem;
+    display: inline-block;
+    margin: 1rem auto 0;
+    padding: 1rem;
+    background: $primary-color;
+    cursor: pointer;
+    &:hover {
+      background: darken($primary-color, 10%);
+    }
+  }
+
+  &__close {
+    font-size: 0.8rem;
+    margin: 1rem auto;
+    display: inline-block;
+    padding: 1rem;
+    cursor: pointer;
+    background: $secondary-color;
+    &:hover {
+      background: darken($secondary-color, 10%);
+    }
+    
+    &--vote {
+    //  background: darken($primary-color, 10%);
+    }
+
+    &--new-option {
+    //  background: $secondary-color;  
+    }
+  
+    &--share {
+    //  background: $secondary-color;
+    }
+
+    &--delete-poll {
+    //  background: $highlight-color;
+    }
+    
+  }
+
+}
+
+/********************************************************/
+// 404 page not found
+.page-not-found {
+  text-align: center;
+  font-size: 2rem;
+  margin-top: 2rem;
+}
+
+/********************************************************/
+// footer
+footer {
+    text-align: center;
+    margin-top: 2rem;
+}

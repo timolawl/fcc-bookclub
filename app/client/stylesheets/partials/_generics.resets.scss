@@ -1,0 +1,46 @@
+// _generics.resets.scss
+//
+// - reset and normalize browser css defaults
+
+*,
+::before,
+::after {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  text-decoration: none;
+}
+
+html {
+  // color: #222;
+}
+
+a {
+  outline: 0;
+}
+
+::selection {
+  // background: #b3d4fc;
+  text-shadow: none;
+}
+
+// forms
+button,
+input,
+optgroup,
+select,
+textarea {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+  outline: none;
+}
+
+button,
+input[type='button'],
+input[type='submit'] {
+  &:hover {
+    cursor: pointer;
+  }
+}

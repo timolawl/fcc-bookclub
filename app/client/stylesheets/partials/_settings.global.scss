@@ -1,0 +1,17 @@
+// _settings.global.scss
+//
+// - global variables (excluding color, as that would be in _settings.colors.scss)
+
+// can't seem to use sass maps as they seem to require a 1 to 1 mapping of key to value
+$font-stack--base: 'Source Sans Pro', Helvetica, sans-serif;
+$font-stack--path-bar: 'Raleway', Helvetica, sans-serif;
+$font-stack--books: 'Cormorant Garamond', Helvetica, sans-serif;
+
+$z-index: (
+  dropdown: 9000
+  // modal
+  // overlay
+  // etc
+);
+
+$paths: index, mybooks, request, pending, completed, settings, signup, login

@@ -1,0 +1,44 @@
+// _block.body.index.banner.scss
+//
+// style of the main banner on the index page
+
+.wrapper--banner {
+  text-align: center;
+  padding: 1rem;
+}
+
+.banner {
+  background-color: map-get($color-stack, bg--base);
+
+  &__link {
+  
+  }
+
+  &__logo {
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-size: 3rem;
+    font-family: Raleway;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  &__image {
+    display: inline-block;
+    margin: 0 0.5rem;
+    vertical-align: middle;
+
+    &--book {
+      height: 64px;
+      width: 64px;
+    }
+  }
+
+  &__subtitle {
+    margin-top: 1rem;
+  }
+
+  
+}

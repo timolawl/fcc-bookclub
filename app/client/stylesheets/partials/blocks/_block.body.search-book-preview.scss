@@ -1,0 +1,92 @@
+// _block.body.search-book-preview.scss
+//
+// - search bar and the preview section
+
+.wrapper--search {
+  margin: 1rem auto 0;
+  width: 80%;
+  max-width: 960px;
+  border: 1px solid black;
+  border-bottom: none;
+}
+
+.wrapper--preview {
+  margin: 0 auto 1rem;
+  width: 80%;
+  max-width: 960px;
+  border: 1px solid black;
+  padding: 1rem;
+  text-align: center;
+  font-family: $font-stack--books;
+}
+
+// bad idea to write the redundant into the generic as the wrapper name would be generic
+.wrapper__subwrapper--search {
+  padding: 1rem;
+  text-align: center;
+  //border-bottom: 1px solid black;
+}
+
+
+.search {
+  &__bar {
+    display: inline-block;
+    height: 1.5rem;
+
+    &__label {
+      border: 1px solid map-get($color-stack, font__link--base);
+      vertical-align: middle;
+      padding: 4px 0.5rem 0;
+      font-size: 11px;
+      background-color: #cacaca;
+    }
+
+    &__input {
+      margin: 0 auto;
+      width: calc(100% - 8rem);
+      border-width: 1px 0;
+      border-style: solid;
+      border-color: map-get($color-stack, font__link--base);
+    }
+
+    &__submit {
+      padding: 0 0.5rem;
+      border: 1px solid map-get($color-stack, font__link--base);
+      vertical-align: middle;
+      @include setBgColorAndHover(map-get($color-stack, bg--base));
+    }
+  }
+}
+
+.preview {
+  &__title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  &__author {
+    font-size: 0.9rem;
+    margin-bottom: 1rem; 
+  }
+
+  &__excerpt {
+    text-align: left;
+    text-indent: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  &__permalink {
+    font-size: 0.9rem;
+    text-align: left;
+    font-weight: bold;
+  }
+
+  &__submit {
+    height: 1.5rem;
+    padding: 0 0.5rem;
+    border: 1px solid map-get($color-stack, font__link--base);
+    display: inline-block;
+    vertical-align: middle;
+    @include setBgColorAndHover(map-get($color-stack, bg--base));
+  }
+}

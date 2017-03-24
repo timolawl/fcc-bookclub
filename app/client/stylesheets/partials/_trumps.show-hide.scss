@@ -1,0 +1,19 @@
+// _trumps.show-hide.scss
+//
+// - show/hide helpers
+
+.is-visible {
+  visibility: visible !important;
+}
+
+.is-invisible {
+  visibility: hidden !important;
+}
+
+.is-displayed {
+  display: initial !important;
+}
+
+.is-not-displayed {
+  display: none !important;
+}

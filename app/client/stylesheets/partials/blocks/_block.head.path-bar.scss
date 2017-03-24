@@ -1,0 +1,45 @@
+// _block.path-bar.scss
+//
+// - path bar styling
+
+.path-bar {
+  height: 64px; // set predetermined height to create the specified triangle piece
+  background-color: map-get($color-stack, bg--selected);
+  
+  &__link {
+    
+  }
+
+  &__subsection {
+    height: 64px;
+    position: relative;
+    display: inline-block;
+    padding: 0.8rem;
+    font-size: 2rem;
+
+    &--index {
+      padding-left: 1rem;
+      background-color: map-get($color-stack, bg--base);
+      &::after {
+        position: absolute;
+        top: 0;
+        right: -32px;
+        content: '';
+        height: 0;
+        widht: 0;
+        border-left: 32px solid map-get($color-stack, bg--base);
+        border-top: 32px solid transparent;
+        border-bottom: 32px solid transparent;
+      }
+    }
+
+    &--path {
+      color: map-get($color-stack, font__link--selected);
+      margin-left: 2rem;
+    }
+  }
+
+  &__text {
+    font-family: Raleway;
+  }
+}
