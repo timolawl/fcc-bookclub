@@ -11,6 +11,7 @@ html(lang='en')
   body
     nav.site-nav
       ul(class= path)
+        a.site-nav__logo(href='/').index: img.site-nav__logo--image(src='/static/img/book--base.svg')
         if loggedIn === 'true'
           li.site-nav__list.mybooks: a(href='/mybooks') My Books
           li.site-nav__list.dropdown-nav.swaps Swaps
