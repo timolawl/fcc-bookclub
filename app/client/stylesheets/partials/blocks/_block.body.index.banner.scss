@@ -29,6 +29,7 @@ $words: ideas, adventure, inspiration, books, swap;
     vertical-align: middle;
 
     &--pre {
+      cursor: default;
       position: absolute;
       top: calc(50% - 0.25rem);
       left: calc(50% - 100px);
@@ -82,6 +83,7 @@ $words: ideas, adventure, inspiration, books, swap;
 // transitions
 @each $word in $words {
   .transition--#{$word} {
+    cursor: default;
     position: absolute;
     top: calc(50% - 0.25rem);
 

@@ -352,6 +352,9 @@ function playSplashPageAnimation () {
       if (words[i] !== 'books' && words[i] !== 'swap') {
         setTimeout(() => {
           el.classList.add('move-down-fade-out');
+          setTimeout(() => {
+            el.classList.add('is-not-displayed');
+          }, 1500);
         }, 1500);
       }
       else if (words[i] === 'books') {
