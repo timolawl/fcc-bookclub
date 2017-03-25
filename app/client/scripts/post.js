@@ -92,8 +92,7 @@ window.onload = function () {
 /****************/    
 
     if (location.pathname.match(/^\/$/)) {
-      console.log('home page');
-      playSplashPageAnimation();
+      setTimeout(() => { playSplashPageAnimation(0) }, 1500); // start from the first index of 0.
     }
 
     if (location.pathname.match(/^\/mypolls$/)) {
@@ -337,60 +336,40 @@ function copyPollLink () {
 
 }
 
-function playSplashPageAnimation () {
+function playSplashPageAnimation (index) {
   let words = ['ideas', 'adventure', 'inspiration', 'books', 'swap'];
-  let spacing = [175, 175, 125];
 
-  for (let i = 0; i < words.length; i++) {
-    console.log('in the for loop ' + i);
-    setTimeout(() => {
-      console.log('the set timeout ' + i);
-      console.log('words[i] = ' + words[i]);
-      let el = document.querySelector('.transition--' + words[i]);
-      el.classList.remove('is-invisible');
-      el.classList.remove('move-down-fade-in');
-      if (words[i] !== 'books' && words[i] !== 'swap') {
-        setTimeout(() => {
-          el.classList.add('move-down-fade-out');
-          setTimeout(() => {
-            el.classList.add('is-not-displayed');
-          }, 1500);
-        }, 1500);
-      }
-      else if (words[i] === 'books') {
-        setTimeout(() => {
-          el.lastChild.classList.add('is-invisible');
-        }, 1560);
-      }
-      if (words[i] === 'swap') {
-        console.log('testo');
-        setTimeout(() => {
-          el.classList.add('translate--post');
-          document.querySelector('.banner__title--pre').classList.add('translate--pre');
-        }, 100);
-      }
-      // el.classList.add('move-down-fade-out');
-    }, i * 1500);
+  // on transition end, start new transition. no need to add delay
+  let el = document.querySelector('.transition--' + words[index]);
+  el.classList.remove('is-invisible');
+  el.classList.remove('move-down-fade-in'); // the transition
+
+  if (!index) { // first element -- ideas
+    el.classList.add('move-down-fade-out');
+    playSplashPageAnimation(index + 1); // start immediately to align w/ other transitions
   }
 
-  /*
-  // while there are still words on in the array, set up the next replacement
-  while (words[index]) {
-    let fragment = new DocumentFragment();
-
-    let newDiv = document.createElement('div');
-    newDiv.classList.add('banner__image');
-
-    let newImg = document.createElement('img');
-    newImg.classList.add('banner__image--book');
-    newImg.src = '/static/img/book' + (index + 2);
-
-    newDiv.appendChild(newImg);
-
-    let newTitle = document.createElement('div');
-    newTitle.className = 'banner__title banner__title--post';
-    newTitle.textContent = words[index];
-
+  if (index === words.length - 1) { // last element -- swap
+    el.classList.add('translate--post');
+    document.querySelector('.banner__title--pre').classList.add('translate--pre');
+    setTimeout(() => { document.querySelector('.transition--books').lastChild.classList.add('is-invisible') }, 10); // timeout solution for the problem of the invisible 'Book' being removed after 'Books' invisibility is processed...
   }
-  */
+
+  el.addEventListener('transitionend', function handleEvent(e) {
+    if (el.classList.contains('move-down-fade-out')) {
+      playSplashPageAnimation(index + 1);
+      el.removeEventListener('transitionend', handleEvent);
+    }
+
+    // check if it's the right transition that finished
+    else if (e.propertyName === 'opacity') {
+      if (index < words.length - 2) {
+        el.classList.add('move-down-fade-out');
+      }
+      else if (words[index] === 'books') { // basically if it gets here, it's 1 before the last
+        playSplashPageAnimation(index + 1);
+        el.removeEventListener('transitionend', handleEvent);
+      }
+    }
+  });
 }

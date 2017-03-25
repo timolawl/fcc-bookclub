@@ -87,6 +87,10 @@ $words: ideas, adventure, inspiration, books, swap;
     position: absolute;
     top: calc(50% - 0.25rem);
 
+    transform: translate(-50%, -50%);
+    opacity: 1;
+    transition: all 1.5s ease;
+
     @if $word == ideas {
       left: calc(50% + 60px);
     } @else if $word == adventure {
@@ -99,12 +103,7 @@ $words: ideas, adventure, inspiration, books, swap;
       left: calc(50% + 98px);
     }
 
-
-    //left: calc(50% + 60px);
-    transform: translate(-50%, -50%);
-    opacity: 1;
-    transition: all 1.5s ease;
-
+    
     &.move-down-fade-in {
       opacity: 0;
       top: 25%;
