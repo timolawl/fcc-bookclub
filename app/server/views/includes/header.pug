@@ -25,21 +25,7 @@ html(lang='en')
         else
           li.site-nav__list.signup: a(href='/signup') Sign Up
           li.site-nav__list.login: a(href='/login') Log In
-    if path == 'index'
-      section.banner
-        .wrapper--banner
-          a.banner__link(href='/')
-            .banner__logo 
-              .banner__title.banner__title--pre Book
-              .banner__image: img.banner__image--book(src='/static/img/book.svg')
-              .banner__title.banner__title--post Swap
-          .banner__subtitle
-            .banner__subtitle--1 Sample Adventures.
-          //
-            .banner__subtitle--2 Share Inspirations.
-            .banner__subtitle--3 Swap Ideas.
-
-    else 
+    if path != 'index' 
       section.path-bar
         a.path-bar__link(href='/')
           .path-bar__subsection.path-bar__subsection--index 

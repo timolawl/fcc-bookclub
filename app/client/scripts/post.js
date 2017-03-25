@@ -92,25 +92,8 @@ window.onload = function () {
 /****************/    
 
     if (location.pathname.match(/^\/$/)) {
-      // populate the page with currently active charts by date.
-      socket.emit('list all polls', {});
-      
-      socket.on('populate all polls', function (data) {
-        let parentNode = document.querySelector('.polls');
-
-        for (let i = 0; i < data.titles.length; i++) {
-          let newDiv = document.createElement('div');
-          newDiv.className = 'poll__element--text';
-          let newSpan = document.createElement('span');
-          newSpan.textContent = data.titles[i];
-          newDiv.appendChild(newSpan);
-          let newLink = document.createElement('a');
-          newLink.className = 'poll__element--link';
-          newLink.href = location.href + 'poll/' + data.permalinks[i];
-          newLink.appendChild(newDiv);
-          parentNode.appendChild(newLink);
-        }
-      });
+      console.log('home page');
+      playSplashPageAnimation();
     }
 
     if (location.pathname.match(/^\/mypolls$/)) {
@@ -354,4 +337,57 @@ function copyPollLink () {
 
 }
 
+function playSplashPageAnimation () {
+  let words = ['ideas', 'adventure', 'inspiration', 'books', 'swap'];
+  let spacing = [175, 175, 125];
 
+  for (let i = 0; i < words.length; i++) {
+    console.log('in the for loop ' + i);
+    setTimeout(() => {
+      console.log('the set timeout ' + i);
+      console.log('words[i] = ' + words[i]);
+      let el = document.querySelector('.transition--' + words[i]);
+      el.classList.remove('is-invisible');
+      el.classList.remove('move-down-fade-in');
+      if (words[i] !== 'books' && words[i] !== 'swap') {
+        setTimeout(() => {
+          el.classList.add('move-down-fade-out');
+        }, 1500);
+      }
+      else if (words[i] === 'books') {
+        setTimeout(() => {
+          el.lastChild.classList.add('is-invisible');
+        }, 1560);
+      }
+      if (words[i] === 'swap') {
+        console.log('testo');
+        setTimeout(() => {
+          el.classList.add('translate--post');
+          document.querySelector('.banner__title--pre').classList.add('translate--pre');
+        }, 100);
+      }
+      // el.classList.add('move-down-fade-out');
+    }, i * 1500);
+  }
+
+  /*
+  // while there are still words on in the array, set up the next replacement
+  while (words[index]) {
+    let fragment = new DocumentFragment();
+
+    let newDiv = document.createElement('div');
+    newDiv.classList.add('banner__image');
+
+    let newImg = document.createElement('img');
+    newImg.classList.add('banner__image--book');
+    newImg.src = '/static/img/book' + (index + 2);
+
+    newDiv.appendChild(newImg);
+
+    let newTitle = document.createElement('div');
+    newTitle.className = 'banner__title banner__title--post';
+    newTitle.textContent = words[index];
+
+  }
+  */
+}

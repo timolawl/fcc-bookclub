@@ -1,3 +1,32 @@
 include /includes/header.pug
-section.polls
+section.banner
+  .wrapper--banner
+    .banner__title.banner__title--pre Swap
+
+    .transition--ideas
+      .banner__image: img.banner__image--book(src='/static/img/book.svg')
+      .banner__title.banner__title--post Ideas
+
+    .transition--adventure.is-invisible.move-down-fade-in
+      .banner__image: img.banner__image--book(src='/static/img/book2.svg')
+      .banner__title.banner__title--post Adventure
+
+    .transition--inspiration.is-invisible.move-down-fade-in
+      .banner__image: img.banner__image--book(src='/static/img/book3.svg')
+      .banner__title.banner__title--post Inspiration
+
+    .transition--books.is-invisible.move-down-fade-in
+      .banner__image: img.banner__image--book(src='/static/img/book3.svg')
+      .banner__title.banner__title--post Books
+
+    .transition--swap.is-invisible
+      .banner__title.banner__title--post Book
+
+    
+
+  //
+    .banner__subtitle
+      .banner__subtitle--1 Sample Adventures.
+      .banner__subtitle--2 Share Inspirations.
+      .banner__subtitle--3 Swap Ideas.
 include /includes/footer.pug
