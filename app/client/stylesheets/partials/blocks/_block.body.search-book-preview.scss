@@ -36,21 +36,21 @@
     &__label {
       border: 1px solid map-get($color-stack, font__link--base);
       vertical-align: middle;
-      padding: 4px 0.5rem 0;
-      font-size: 11px;
+      padding: 0 0.5rem;
+      font-size: 16px;
       background-color: #cacaca;
     }
 
     &__input {
       margin: 0 auto;
-      width: calc(100% - 8rem);
+      width: calc(100% - 8.5rem);
       border-width: 1px 0;
       border-style: solid;
       border-color: map-get($color-stack, font__link--base);
     }
 
     &__submit {
-      padding: 0 0.5rem;
+      padding: 0 0.5rem 2px;
       border: 1px solid map-get($color-stack, font__link--base);
       vertical-align: middle;
       @include setBgColorAndHover(map-get($color-stack, bg--base));
@@ -82,6 +82,7 @@
   }
 
   &__submit {
+    font-family: $font-stack--base;
     height: 1.5rem;
     padding: 0 0.5rem;
     border: 1px solid map-get($color-stack, font__link--base);

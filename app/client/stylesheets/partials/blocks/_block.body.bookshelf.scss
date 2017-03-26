@@ -1,0 +1,25 @@
+// _block.body.bookshelf.scss
+//
+// - display case for .books
+
+.bookshelf {
+  margin: 1rem auto;
+  width: 80%;
+  max-width: 960px;
+  height: auto;
+  border: 1px solid black;
+}
+
+.book {
+  display: inline-block;
+  border: 1px solid gray;
+  margin: 1rem;
+
+  &__link {
+    //display: block;
+  }
+
+  &__image {
+    display: block; // get rid of white space below images
+  }
+}
