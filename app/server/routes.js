@@ -21,7 +21,7 @@ module.exports = (app, passport) => {
             res.render('userform', { path: 'signup', message: req.flash('signupMessage') });
         })
         .post(passport.authenticate('local-signup', {
-            successRedirect: '/',
+            successRedirect: '/mybooks',
             failureRedirect: '/signup',
             failureFlash: true
         }));
@@ -31,7 +31,7 @@ module.exports = (app, passport) => {
             res.render('userform', { path: 'login', message: req.flash('loginMessage') }); // should I only have one file between signup and login? Just pass in an object to specify which is which?
         })
         .post(passport.authenticate('local-login', {
-            successRedirect: '/',
+            successRedirect: '/mybooks',
             failureRedirect: '/login',
             failureFlash: true
         }));
@@ -79,11 +79,13 @@ module.exports = (app, passport) => {
       .get((req, res) => {
 //      .get(isLoggedIn, (req, res) => {
           // no need to join a socket room here because at this page, nothing will change at this level
-        res.render('allbooks', { loggedIn: 'true', path: 'allbooks' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
+        if (req.isAuthenticated())
+          res.render('allbooks', { loggedIn: 'true', path: 'allbooks' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
+        else res.render('allbooks', {loggedIn: 'false', path: 'allbooks' });
       });
 
     app.route('/mybooks')
-      .get((req, res) => {
+      .get(isLoggedIn, (req, res) => {
 //      .get(isLoggedIn, (req, res) => {
           // no need to join a socket room here because at this page, nothing will change at this level
         res.render('mybooks', { loggedIn: 'true', path: 'mybooks' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
@@ -96,24 +98,23 @@ module.exports = (app, passport) => {
 
 
     app.route('/request')
-      .get((req, res) => {
+      .get(isLoggedIn, (req, res) => {
         res.render('request', { loggedIn: 'true', path: 'request' });
       });
 
     app.route('/pending')
-      .get((req, res) => {
+      .get(isLoggedIn, (req, res) => {
         res.render('pending', { loggedIn: 'true', path: 'pending' });
       });
 
     app.route('/completed')
-      .get((req, res) => {
+      .get(isLoggedIn, (req, res) => {
         res.render('completed', { loggedIn: 'true', path: 'completed' });
       });
 
     app.route('/settings')
-
-      .get(isNotLoggedIn, (req, res) => {
-            res.render('userform', { path: 'settings', message: req.flash('signupMessage') });
+      .get(isLoggedIn, (req, res) => {
+            res.render('userform', { loggedIn: 'true', path: 'settings', message: req.flash('signupMessage') });
         });
   /*
         .post(passport.authenticate('local-signup', {
@@ -142,12 +143,12 @@ module.exports = (app, passport) => {
 function isLoggedIn (req, res, next) {
     if (req.isAuthenticated()) // isAuthenticated is a passport JS add-on method
         return next();
-    res.redirect('/');
+    res.redirect('/signup');
 }
 
 function isNotLoggedIn (req, res, next) {
     if (req.isAuthenticated())
-        res.redirect('/');
+        res.redirect('/mybooks');
     else return next();
 }
 /*

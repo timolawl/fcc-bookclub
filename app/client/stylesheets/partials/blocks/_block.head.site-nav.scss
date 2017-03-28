@@ -49,7 +49,7 @@
         background: map-get($color-stack, bg--selected);
       }
     } @else if $path == settings {
-       ul.settings li.swaps {
+       ul.settings li.myaccount {
         background: map-get($color-stack, bg--selected);
       }
     } @else {
@@ -84,4 +84,8 @@
       display: block;
     }
   }
+}
+
+ul.index .dropdown-nav__list {
+  background-color: map-get($color-stack, bg--selected);
 }

@@ -10,11 +10,15 @@ const userSchema = new mongoose.Schema({
     username    : { type: String, required: true, unique: true },
     email       : { type: String, required: true, unique: true },
     password    : { type: String, required: true, select: false },
+    /*
     name        : { firstName: { type: String, required: true },
                     lastName: { type: String, required: true } },
-    address     : { street: { type: String, required: true },
-                    city: { type: String, required: true },
-                    state: { type: String, required: true } }
+    */
+    address     : { address1  : { type: String },
+                    address2  : { type: String },
+                    city      : { type: String },
+                    state     : { type: String },
+                    zip       : { type: String } }
   }
 });
 
