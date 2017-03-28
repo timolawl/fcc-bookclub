@@ -1,0 +1,23 @@
+mixin spb(buttonLabel)
+  section
+    .wrapper--search
+      .wrapper__subwrapper--search
+        label.search__bar.search__bar__label Search
+        input.search__bar.search__bar__input
+        button.search__bar.search__bar__submit(type='button') Submit
+    .wrapper--preview
+      .preview__title
+        a.preview__link(href='http://books.google.com/books?id=wiX1O1ZBdYoC&hl=&source=gbs_api') Angels & Demons
+      .preview__author
+        p Dan Brown
+      .preview__excerpt
+        p When a world renowned scientist is found brutally murdered in a Swiss research facility, a Harvard professor, Robert Langdon, is summoned to identify the mysterious symbol seared onto the dead man's chest. His baffling conclusion: it is the work of the Illuminati, a secret brotherhood presumed extinct for nearly four hundred years - reborn to continue their bitter vendetta against their sworn enemy, the Catholic church. In Rome, the college of cardinals assembles to elect a new pope. Yet somewhere within the walls of the Vatican, an unstoppable bomb of terrifying power relentlessly counts down to oblivion. While the minutes tick away, Langdon joins forces with Vittoria Vetra, a beautiful and mysterious Italian scientist, to decipher the labyrinthine trail of ancient symbols that snakes across Rome to the long-forgotten Illuminati lair - a secret refuge wherein lies the only hope for the Vatican. But with each revelation comes another twist, another turn in the plot, which leaves Langdon and Vetra reeling and at the mercy of a seemingly invisible enemy ...
+      //
+        .preview__permalink: a(href='http://books.google.com/books?id=wiX1O1ZBdYoC&hl=&source=gbs_api') More info...
+      button.preview__submit(type='button')= buttonLabel
+    .wrapper--bookshelf.bookshelf--mybooks
+      .book: a.book__link(href='https://books.google.com/books?id=wiX1O1ZBdYoC&hl=en&source=gbs_api'): img.book__image(src='http://books.google.com/books/content?id=wiX1O1ZBdYoC&printsec=frontcover&img=1&zoom=1&source=gbs_api')
+      .book: a.book__link(href='https://www.googleapis.com/books/v1/volumes/R7YsowJI9-IC'): img.book__image(src='http://books.google.com/books/content?id=R7YsowJI9-IC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_ap')
+      .book: a.book__link(href='https://www.googleapis.com/books/v1/volumes/p1MULH7JsTQC'): img.book__image(src='http://books.google.com/books/content?id=p1MULH7JsTQC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api')
+      .book: a.book__link(href='https://www.googleapis.com/books/v1/volumes/PXa2bby0oQ0C'): img.book__image(src='http://books.google.com/books/content?id=PXa2bby0oQ0C&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api')
+

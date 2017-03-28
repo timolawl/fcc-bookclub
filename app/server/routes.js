@@ -105,9 +105,23 @@ module.exports = (app, passport) => {
       });
 
     app.route('/settings')
+
+      .get(isNotLoggedIn, (req, res) => {
+            res.render('userform', { path: 'settings', message: req.flash('signupMessage') });
+        });
+  /*
+        .post(passport.authenticate('local-signup', {
+            successRedirect: '/',
+            failureRedirect: '/signup',
+            failureFlash: true
+        }));
+        */
+
+/*
       .get((req, res) => {
         res.render('settings', { loggedIn: 'true', path: 'settings' });
       });
+      */
 
     app.use((req, res) => {
       if (req.isAuthenticated())

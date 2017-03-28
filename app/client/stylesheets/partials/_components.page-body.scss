@@ -9,8 +9,27 @@
   text-align: center;
 }
 
+.subsection {
+  &__title {
+    margin: 1rem auto;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+}
 
+
+// index page banner
 @import 'blocks/_block.body.index.banner';
+
+// request page styling
+@import 'blocks/_block.body.style.request';
+
+// modules:
+// - form styling module
 @import 'blocks/_block.body.form';
+
+// - search/preview/bookshelf module
 @import 'blocks/_block.body.search-book-preview';
 @import 'blocks/_block.body.bookshelf';
+
+

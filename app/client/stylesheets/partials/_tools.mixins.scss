@@ -2,9 +2,27 @@
 //
 // 
 
-@mixin setBgColorAndHover($base-color) {
+@mixin setBgColorAndHover($base-color: map-get($color-stack, bg--base)) {
   background-color: $base-color;
   &:hover {
     background-color: darken($base-color, 10%);
   }
+}
+
+@mixin setWrapper($padding: 0) {
+  margin: 1rem auto;
+  padding: $padding;
+  width: 80%;
+  max-width: 960px;
+  border: 1px solid black;
+}
+
+@mixin setButton($base-color: map-get($color-stack, bg--base)) {
+  font-family: $font-stack--base;
+  height: 2rem;
+  padding: 0 0.5rem;
+  border: 1px solid map-get($color-stack, font__link--base);
+  display: inline-block;
+  vertical-align: middle;
+  @include setBgColorAndHover($base-color);
 }

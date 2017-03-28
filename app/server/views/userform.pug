@@ -6,8 +6,8 @@ include /includes/header.pug
         span Sign Up
       when 'login'
         span Log In
-      when 'reset'
-        span Reset Password
+      when 'settings'
+        span Settings
   - if (message.length)
     .message= message
   form.form(method='post')
@@ -16,19 +16,27 @@ include /includes/header.pug
       input.form__input.form__input--name(type='text' name='username' pattern="^(?:\\w+[\\w.'-]*(?: [\\w.'-]+)*){1,50}$" required)
     label.form__label(for='email') Email
     input.form__input.form__input--email(type='email' name='email' pattern='^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9]+\.[a-zA-Z0-9-.]+$' maxlength='100' required)
-    if path != 'reset'
-      label.form__label(for='password') Password
-      input.form__input.form__input--password(type='password' name='password' pattern='^.{6,50}$' required)
-    if path == 'signup'
+    label.form__label(for='password') Password
+    input.form__input.form__input--password(type='password' name='password' pattern='^.{6,50}$' required)
+    if path != 'login'
       label.form__label(for='confirm') Confirm Password
       input.form__input.form__input--confirm(type='password' name='confirm' pattern='^.{6,50}$' required)
+    if path == 'settings'
+      label.form__label(for='address-line-1') Address 1
+      input.form__input.form__input--address-line-1(type='text' name='address-line-1')
+      label.form__label(for='address-line-2') Address 2
+      input.form__input.form__input--address-line-1(type='text' name='address-line-2')
+      label.form__label(for='city') City
+      input.form__input.form__input--city(type='text' name='city')
+      label.form__label(for='state') State
+      input.form__input.form__input--state(type='text' name='state')
+      label.form__label(for='zip') Zip
+      input.form__input.form__input--zip(type='text')
     case path
       when 'signup'
         input.form__submit(type='submit' formaction='/signup' value='Sign Up')
       when 'login'
         input.form__submit(type='submit' formaction='/login' value='Log In')
-      when 'reset'
-        input.form__submit(type='submit' formaction='/reset' value='Reset Password')
-    if path == 'login'
-      a.reset(href='/reset') Reset password
+      when 'settings'
+        input.form__submit(type='submit' formaction='/settings' value='Update Settings')
 include /includes/footer.pug

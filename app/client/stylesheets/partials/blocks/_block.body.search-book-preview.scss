@@ -3,19 +3,14 @@
 // - search bar and the preview section
 
 .wrapper--search {
-  margin: 1rem auto 0;
-  width: 80%;
-  max-width: 960px;
-  border: 1px solid black;
+  @include setWrapper();
+  margin-bottom: 0;
   border-bottom: none;
 }
 
 .wrapper--preview {
-  margin: 0 auto 1rem;
-  width: 80%;
-  max-width: 960px;
-  border: 1px solid black;
-  padding: 1rem;
+  @include setWrapper(1rem);
+  margin-top: 0;
   text-align: center;
   font-family: $font-stack--books;
 }
@@ -24,20 +19,19 @@
 .wrapper__subwrapper--search {
   padding: 1rem;
   text-align: center;
-  //border-bottom: 1px solid black;
 }
 
 
 .search {
   &__bar {
     display: inline-block;
-    height: 1.5rem;
 
     &__label {
+      height: 2rem;
       border: 1px solid map-get($color-stack, font__link--base);
-      vertical-align: middle;
-      padding: 0 0.5rem;
-      font-size: 16px;
+      vertical-align: top;
+      padding: 0.25rem 0.5rem 0;
+      font-size: 1rem;
       background-color: #cacaca;
     }
 
@@ -50,9 +44,10 @@
     }
 
     &__submit {
-      padding: 0 0.5rem 2px;
+      padding: 0 0.5rem;
+      height: 2rem;
       border: 1px solid map-get($color-stack, font__link--base);
-      vertical-align: middle;
+      //vertical-align: middle;
       @include setBgColorAndHover(map-get($color-stack, bg--base));
     }
   }
@@ -82,12 +77,7 @@
   }
 
   &__submit {
-    font-family: $font-stack--base;
-    height: 1.5rem;
-    padding: 0 0.5rem;
-    border: 1px solid map-get($color-stack, font__link--base);
-    display: inline-block;
-    vertical-align: middle;
-    @include setBgColorAndHover(map-get($color-stack, bg--base));
+    @include setButton();
   }
+  
 }

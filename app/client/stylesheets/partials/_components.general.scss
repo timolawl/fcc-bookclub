@@ -1,0 +1,19 @@
+// _components.general.scss
+//
+// styling of general components that do not fit necessarily into page-head, page-body, or page-foot
+// more specifically, these are styling of classes (hence not in the _element section) that for instance are thematic to the site
+
+// theme styling of buttoms: - moved to mixin 3/27/17
+/*
+.button {
+  &--1 { // button variation 1 -- also to specify custom nature over frameworks, etc
+    font-family: $font-stack--base;
+    height: 1.5rem;
+    padding: 0 0.5rem;
+    border: 1px solid map-get($color-stack, font__link--base);
+    display: inline-block;
+    vertical-align: middle;
+    @include setBgColorAndHover(map-get($color-stack, bg--base));
+  }
+}
+*/

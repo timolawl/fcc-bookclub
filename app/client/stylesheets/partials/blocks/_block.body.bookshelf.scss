@@ -2,12 +2,9 @@
 //
 // - display case for .books
 
-.bookshelf {
-  margin: 1rem auto;
-  width: 80%;
-  max-width: 960px;
+.wrapper--bookshelf {
+  @include setWrapper();
   height: auto;
-  border: 1px solid black;
 }
 
 .book {
