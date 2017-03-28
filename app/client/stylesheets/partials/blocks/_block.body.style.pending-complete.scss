@@ -1,0 +1,78 @@
+// _block.body.style.pending-complete.scss
+//
+// custom styling for the pending and complete pages
+
+
+// wrapper styling
+.wrapper--trades {
+  @include setWrapper();
+  @media screen and (min-width: 1080px) {
+    display: flex;
+  }
+}
+
+.sub-wrapper--trades {
+  width: 100%;
+  @media screen and (min-width: 1080px) {
+    width: 50%;
+    flex: 1;
+  }
+}
+
+// svg styling -- arrow, arrow-left, arrow-right
+.arrow {
+  display: inline-block;
+
+  &-left, &-right {
+    display: block;
+    height: 64px;
+    width: 64px;
+  }
+}
+
+.book { // .book defined in bookshelf - do not use base .book
+  &--self-owned {
+    display: inline-block;
+    margin-right: 1rem;
+  }
+  
+  &--other-owned {
+    display: inline-block;
+    margin-left: 1rem;
+  }
+}
+
+
+.trade { // when to specify .wrapper/.sub-wrapper vs unique class name for outer container?
+  // trade unit
+  margin: 1rem;
+  width: auto; // 100% of the container width
+  text-align: center;
+  border: 1px solid black;
+  
+  &__request-date {
+  
+  }
+
+  &__description {
+    margin: 1rem;
+  }
+
+  &__pictogram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem;
+  }
+
+  &__button {
+    margin: 1rem;
+    &--approve {
+      @include setButton();
+    }
+
+    &--decline {
+      @include setButton(#cacaca);
+    }
+  }
+}

@@ -1,5 +1,42 @@
 include /includes/header.pug
-.title: span My Books
-section.bolls
+section.wrapper--trades
+  .sub-wrapper--trades.self-desired
+    .subsection__title Books I Want
+    .trade
+      .trade__request-date
+      .trade__description You have requested to trade your copy of _____ for a user's copy of ____
+      .trade__pictogram
+        .book--self-owned
+          a.book__link(href='https://books.google.com/books?id=wiX1O1ZBdYoC&hl=en&source=gbs_api'): img.book__image(src='http://books.google.com/books/content?id=wiX1O1ZBdYoC&printsec=frontcover&img=1&zoom=1&source=gbs_api')
+        .arrow
+          img.arrow-right(src='/static/img/arrow-right.svg')
+        .book--other-owned
+          a.book__link(href='https://www.googleapis.com/books/v1/volumes/PXa2bby0oQ0C'): img.book__image(src='http://books.google.com/books/content?id=PXa2bby0oQ0C&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api')
+    .trade
+      .trade__request-date
+      .trade__description You have requested to trade your copy of _____ for a user's copy of ____
+      .trade__pictogram
+        .book--self-owned
+          a.book__link(href='https://books.google.com/books?id=wiX1O1ZBdYoC&hl=en&source=gbs_api'): img.book__image(src='http://books.google.com/books/content?id=wiX1O1ZBdYoC&printsec=frontcover&img=1&zoom=1&source=gbs_api')
+        .arrow
+          img.arrow-right(src='/static/img/arrow-right.svg')
+        .book--other-owned
+          a.book__link(href='https://www.googleapis.com/books/v1/volumes/PXa2bby0oQ0C'): img.book__image(src='http://books.google.com/books/content?id=PXa2bby0oQ0C&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api')
+
+  .sub-wrapper--trades.other-desired
+    .subsection__title Books Others Want
+    .trade
+      .trade__request-date
+      .trade__description Another user has requested to trade their copy of _____ for a your copy of ____
+      .trade__pictogram
+        .book--self-owned
+          a.book__link(href='https://books.google.com/books?id=wiX1O1ZBdYoC&hl=en&source=gbs_api'): img.book__image(src='http://books.google.com/books/content?id=wiX1O1ZBdYoC&printsec=frontcover&img=1&zoom=1&source=gbs_api')
+        .arrow
+          img.arrow-left(src='/static/img/arrow-left.svg')
+        .book--other-owned
+          a.book__link(href='https://www.googleapis.com/books/v1/volumes/PXa2bby0oQ0C'): img.book__image(src='http://books.google.com/books/content?id=PXa2bby0oQ0C&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api')
+      .trade__buttons
+        button.trade__button.trade__button--approve Approve
+        button.trade__button.trade__button--decline Decline
 include /includes/footer.pug
 
