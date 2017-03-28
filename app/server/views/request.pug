@@ -8,7 +8,13 @@ include /includes/mixins/search-preview-bookshelf.pug
     span Request
   +spb('Request')
   .wrapper--request__selection
-    span Request:
+    .request__selection__description
+      .selection--title Angels & Demons
+      .selection--author Dan Brown
+    .request__selection__book-image
+      a.book__link(href='https://books.google.com/books?id=wiX1O1ZBdYoC&hl=en&source=gbs_api')
+        img.book__image(src='http://books.google.com/books/content?id=wiX1O1ZBdYoC&printsec=frontcover&img=1&zoom=1&source=gbs_api')
+
 .subsection
   .subsection__title
     .request__step-number 2

@@ -9,12 +9,14 @@
   }
 }
 
-@mixin setWrapper($padding: 0) {
+@mixin setWrapper($padding: 0, $border: false) {
   margin: 1rem auto;
   padding: $padding;
   width: 80%;
   max-width: 960px;
-  border: 1px solid black;
+  @if $border {
+    border: 1px solid black;
+  }
 }
 
 @mixin setButton($base-color: map-get($color-stack, bg--base)) {

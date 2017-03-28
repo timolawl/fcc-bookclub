@@ -3,7 +3,7 @@
 // - display case for .books
 
 .wrapper--bookshelf {
-  @include setWrapper();
+  @include setWrapper(0, true);
   height: auto;
 }
 
@@ -13,7 +13,7 @@
   margin: 1rem;
 
   &__link {
-    //display: block;
+    // display: inline-block;
   }
 
   &__image {

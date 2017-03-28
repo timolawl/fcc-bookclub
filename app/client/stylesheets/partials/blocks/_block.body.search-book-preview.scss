@@ -3,13 +3,13 @@
 // - search bar and the preview section
 
 .wrapper--search {
-  @include setWrapper();
+  @include setWrapper(0, true);
   margin-bottom: 0;
   border-bottom: none;
 }
 
 .wrapper--preview {
-  @include setWrapper(1rem);
+  @include setWrapper(1rem, true);
   margin-top: 0;
   text-align: center;
   font-family: $font-stack--books;
@@ -44,10 +44,10 @@
     }
 
     &__submit {
-      padding: 0 0.5rem;
+      padding: 0 0.5rem 2px;
       height: 2rem;
       border: 1px solid map-get($color-stack, font__link--base);
-      //vertical-align: middle;
+      vertical-align: top;
       @include setBgColorAndHover(map-get($color-stack, bg--base));
     }
   }

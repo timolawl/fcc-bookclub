@@ -72,7 +72,7 @@
     }
 
     &--decline {
-      @include setButton(#cacaca);
+      @include setButton();
     }
   }
 }

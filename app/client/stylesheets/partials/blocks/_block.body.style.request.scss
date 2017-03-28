@@ -5,11 +5,15 @@
 .wrapper {
   &--request {
     &__selection {
-      @include setWrapper(1rem);
+      @include setWrapper(0, true);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: map-get($color-stack, bg--base);
     }
 
     &__confirm {
-      @include setWrapper(1rem);
+      @include setWrapper(1rem, true);
       text-align: center;
     }
   }
@@ -28,6 +32,33 @@
     margin-right: 0.5rem;
   }
 
+  &__selection {
+    &__description {
+      margin: 1rem;
+      //flex: 1;
+      text-align: center;
+    }
+
+    &__book-image {
+      margin: 1rem;
+      //flex: 1;
+      //display: flex;
+      //justify-content: center;
+    }
+
+    &--title {
+      display: inline-block;
+    }
+    &--author {
+      display: inline-block;  
+    }
+
+    &--book {
+      // display: inline-block;
+    }
+  }
+
+
   &__button {
     // base styling from .button--1
     &--swap {
@@ -36,7 +67,7 @@
     }
 
     &--cancel {
-      @include setButton(#cacaca);
+      @include setButton();
       margin: 1rem;
     }
   }
