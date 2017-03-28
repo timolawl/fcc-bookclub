@@ -75,13 +75,19 @@ module.exports = (app, passport) => {
             console.log(req.body);
         });
 */
+    app.route('/allbooks')
+      .get((req, res) => {
+//      .get(isLoggedIn, (req, res) => {
+          // no need to join a socket room here because at this page, nothing will change at this level
+        res.render('allbooks', { loggedIn: 'true', path: 'allbooks' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
+      });
 
     app.route('/mybooks')
-        .get((req, res) => {
-  //      .get(isLoggedIn, (req, res) => {
-            // no need to join a socket room here because at this page, nothing will change at this level
-            res.render('mybooks', { loggedIn: 'true', path: 'mybooks' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
-        });
+      .get((req, res) => {
+//      .get(isLoggedIn, (req, res) => {
+          // no need to join a socket room here because at this page, nothing will change at this level
+        res.render('mybooks', { loggedIn: 'true', path: 'mybooks' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
+      });
 
     app.route(/^\/poll\/[0-9a-f-]+$/) // nonce path; I'll need to retrieve the poll from this permalink somehow... this also needs to verify the existence of the path in the server, otherwise display error.
         .get(controller.renderpoll)

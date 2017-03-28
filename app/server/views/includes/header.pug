@@ -12,6 +12,7 @@ html(lang='en')
     nav.site-nav
       ul(class= path)
         a.site-nav__logo(href='/').index: img.site-nav__logo--image(src='/static/img/book--base.svg')
+        li.site-nav__list.allbooks: a(href='/allbooks') All books
         if loggedIn === 'true'
           li.site-nav__list.mybooks: a(href='/mybooks') My Books
           li.site-nav__list.dropdown-nav.swaps Swaps
@@ -33,7 +34,9 @@ html(lang='en')
             .path-bar__text Book Swap
         if path != 'index'
           .path-bar__subsection.path-bar__subsection--path
-            if path == 'mybooks'
+            if path == 'allbooks'
+              .path-bar__text All Books
+            else if path == 'mybooks'
               .path-bar__text My Books
             else if path == 'request'
               .path-bar__text Request A Swap
