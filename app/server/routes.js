@@ -75,20 +75,20 @@ module.exports = (app, passport) => {
             console.log(req.body);
         });
 */
-    app.route('/allbooks')
+    app.route('/allbookshelves')
       .get((req, res) => {
 //      .get(isLoggedIn, (req, res) => {
           // no need to join a socket room here because at this page, nothing will change at this level
         if (req.isAuthenticated())
-          res.render('allbooks', { loggedIn: 'true', path: 'allbooks' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
-        else res.render('allbooks', {loggedIn: 'false', path: 'allbooks' });
+          res.render('allbookshelves', { loggedIn: 'true', path: 'allbookshelves' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
+        else res.render('allbookshelves', {loggedIn: 'false', path: 'allbookshelves' });
       });
 
-    app.route('/mybooks')
+    app.route('/mybookshelf')
       .get(isLoggedIn, (req, res) => {
 //      .get(isLoggedIn, (req, res) => {
           // no need to join a socket room here because at this page, nothing will change at this level
-        res.render('mybooks', { loggedIn: 'true', path: 'mybooks' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
+        res.render('mybookshelf', { loggedIn: 'true', path: 'mybookshelf' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
       });
 
     app.route(/^\/poll\/[0-9a-f-]+$/) // nonce path; I'll need to retrieve the poll from this permalink somehow... this also needs to verify the existence of the path in the server, otherwise display error.

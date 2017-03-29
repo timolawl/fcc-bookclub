@@ -5,12 +5,12 @@
 .wrapper--search {
   @include setWrapper(0, true);
   margin-bottom: 0;
-  border-bottom: none;
 }
 
 .wrapper--preview {
   @include setWrapper(1rem, true);
   margin-top: 0;
+  border-top: none;
   text-align: center;
   font-family: $font-stack--books;
 }
@@ -35,12 +35,28 @@
       background-color: #cacaca;
     }
 
+    &__option {
+      -webkit-appearance: none;
+      -webkit-border-radius: 0px;
+      border: 1px solid map-get($color-stack, font__link--base);
+      background: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='#444' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
+      background-position: 100% 50%;
+      background-repeat: no-repeat;
+      height: 2rem;
+      padding: 0 1.4rem 2px 0.8rem;
+      background-color: #cacaca;
+      vertical-align: top; 
+    }
+
     &__input {
       margin: 0 auto;
       width: calc(100% - 8.5rem);
       border-width: 1px 0;
       border-style: solid;
       border-color: map-get($color-stack, font__link--base);
+      &--mybookshelf {
+        width: calc(100% - 13rem);
+      }
     }
 
     &__submit {

@@ -7,13 +7,16 @@ const User = require('./user');
 
 const bookSchema = new mongoose.Schema({
   title           : { type: String, required: true },
+  author          : [ { type: String, required: true } ],
+  ISBN_10         : { type: Number },
+  ISBN_13         : { type: Number },
   currentOwner    : { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  tradeRequest   : { requester: { type: Schema.Types.ObjectId, ref: 'User' },
-                     offering: { type: Schema.Types.ObjectId, ref: 'Book' } },
+  tradeRequest    : { requester: { type: Schema.Types.ObjectId, ref: 'User' },
+                      offering: { type: Schema.Types.ObjectId, ref: 'Book' } },
   completedTrades : [ { transaction: {
-                         requester: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+                         requester: { type: Schema.Types.ObjectId, ref: 'User' },
                          offering: { type: Schema.Types.ObjectId, ref: 'Book' },
-                         requestee: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+                         requestee: { type: Schema.Types.ObjectId, ref: 'User' },
                          dateOfSwap: { type: Date, required: true }
                     } } ]
 });

@@ -18,6 +18,13 @@ module.exports = io => {
       userID = socket.request.session.passport.user;
     }
 
+
+    socket.on('search bookshelf', data => {
+      // find author or title using $or
+    });
+
+
+
     socket.on('bar search', function (data) {
 
       const params = 'grant_type=client_credentials' + '&' +
