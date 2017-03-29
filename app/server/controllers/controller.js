@@ -1,6 +1,6 @@
 'use strict'
 
-const uuid = require('node-uuid'); // nonce creation
+//const uuid = require('node-uuid'); // nonce creation
 
 const Book = require('../models/book');
 
@@ -31,7 +31,7 @@ function controller () {
     for (let i = 0; i < optionsLength; i++) {
       newPoll.options.push({ optionText: req.body.options[i], voteCount: 0 });
     }
-    newPoll.permalink = uuid.v4();
+    //newPoll.permalink = uuid.v4();
     
     newPoll.save(err => {
       if (err) throw err;

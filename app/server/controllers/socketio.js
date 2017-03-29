@@ -2,6 +2,7 @@
 
 const fetch = require('node-fetch');
 
+const User = require('../models/user');
 const Book = require('../models/book');
 
 module.exports = io => {
@@ -18,10 +19,84 @@ module.exports = io => {
       userID = socket.request.session.passport.user;
     }
 
-
-    socket.on('search bookshelf', data => {
-      // find author or title using $or
+    // socket rooms
+    socket.on('leave room', function (data) {
+      if (socket.room !== undefined)
+        socket.leave(socket.room);
     });
+
+    socket.on('change room', function (data) {
+      if (socket.room !== undefined)
+        socket.leave(socket.room);
+      socket.room = data.room;
+      socket.join(socket.room);
+    });
+
+    socket.on('CREATE.book', data => {
+      // add current userID to the book just generated and save to books collection
+      const newBook = new Book();
+      const socketBook = {};
+      newBook.title = socketBook.title = data.title;
+      newBook.author = socketBook.author = data.author;
+      newBook.description = socketBook.description = data.description;
+      newBook.thumbnail = socketBook.thumbnail = data.thumbnail;
+      newBook.ISBN_10 = socketBook.ISBN_10 = data.ISBN_10 || '';
+      newBook.ISBN_13 = socketBook.ISBN_13 = data.ISBN_13 || '';
+      newBook.dateAdded = socketBook.dateAdded = Date.now();
+      newBook.currentOwner = userID; // passing this to client is probably a bad idea
+      newBook.save(err => {
+        if (err) console.error(err);
+        console.log('book has been added!');
+        // pass mongodDB document id as identifier for the book to client....sounds dangerous?
+        // but the alternative to generate a nonce that while small has a chance of colliding
+        // not sure what the best option is.
+        //
+        socketBook.id = newBook.id;
+
+        socket.to('allbookshelves').emit('CREATE.book.render', { data: socketBook });
+        // if the user is the same as the submitter, add it to his or her bookshelf
+        // check for room, if user is in my
+        socket.emit('CREATE.book.render', { data: socketBook });
+
+      });
+    });
+
+    // population request from client
+    socket.on('READ.bookshelves.all', data => {
+      // retrieve all books sorted by date added and return
+    });
+
+    // population request from client
+    socket.on('READ.bookshelf.all', data => {
+      
+    });
+
+    // search request from client
+    socket.on('READ.bookshelves.query', data => {
+      
+    });
+
+    // search request from client
+    socket.on('READ.bookshelf.query', data => {
+      // find author or title using $or in user's bookshelf, then return
+
+    });
+
+    // successful swap -> bookshelves will need to display the swapped books ability
+    // to take swap requests
+    socket.on('UPDATE.bookshelves', data => {
+    
+    });
+
+    // successful swap -> bookshelf will need to display the newly acquired book
+    // and have the swapped out book removed from the listing
+    // book should be able to take on swap requests (marks also need to be displayed here)
+    // should a swapped book update their dateAdded? I think they should.
+    socket.on('UPDATE.bookshelf', data => {
+      // hence, an update will consist of adding the new book at the front
+      // and removing the old element.
+    });
+
 
 
 

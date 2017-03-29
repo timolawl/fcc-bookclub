@@ -59,7 +59,10 @@ window.onload = function () {
   if (location.pathname.match(/^\/$/)) // if home path
     socket.emit('change room', { room: location.pathname }); // '/'
 
-  if (location.pathname.match(/^\/(?:signup|login|reset|createpoll|mybooks)\/?/i))
+  if (location.pathname.match(/^\/(?:allbookshelves|mybookshelf)\/?$/i))
+    socket.emit('change room', { room: location.pathname.toLowerCase().slice(1) });
+
+  if (location.pathname.match(/^\/(?:signup|login|settings|allbookshelves|mybookshelf)\/?/i))
     socket.emit('leave room', { path: location.pathname.toLowerCase().slice(1) });
 
 /****************/    
@@ -68,14 +71,48 @@ window.onload = function () {
     setTimeout(() => { playSplashPageAnimation(0) }, 1500); // start from the first index of 0.
   }
 
-  if (location.pathname.match(/^\/(?:signup|login)\/?/i)) {
+  if (location.pathname.match(/^\/(?:signup|login)\/?$/i)) {
     // clear out form
     document.querySelector('form').reset();
     // gray out submit button until everything is filled in.
     checkForm(location.pathname.toLowerCase().slice(1));
   }
 
-  if (location.pathname.match(/^\/mybookshelf$/)) {
+  if (location.pathname.match(/^\/allbookshelves\/?$/i)) {
+    socket.on('CREATE.book.render', data => {
+      // add book to the front of the book list
+      addBook(data);
+
+    });
+
+    socket.emit('READ.bookshelves.all', {});
+
+    socket.on('READ.bookshelves.render', data => {
+    
+    });
+
+    socket.on('UPDATE.bookshelves.render', data => {
+      
+    });
+  }
+
+  if (location.pathname.match(/^\/mybookshelf\/?$/i)) {
+    socket.on('CREATE.book.render', data => {
+      addBook(data);
+    });
+
+    socket.emit('READ.bookshelf.all', {});
+
+    socket.on('READ.bookshelf.render', data => {
+      
+    });
+
+    socket.on('UPDATE.bookshelf.render', data => {
+      // add newly created book to the bookshelf
+      // remove old book
+      
+    });
+
     document.querySelector('.search__bar__submit').addEventListener('click', e => {
       // check the select option first
       let selectOption = document.querySelector('.search__bar__option').value;
@@ -89,39 +126,11 @@ window.onload = function () {
         let fetchHeaders = { method: 'GET', headers: { accept: 'application/json' } };
         fetch(encodedURL, fetchHeaders)
           .then(res => res.json())
-          // if no items in response, then display message that no book was found with criteria
-          
           .then(json => {
-            if (json.totalItems) { // if there are items.
-              document.querySelector('.preview__link').textContent = json.items[0].volumeInfo.title;
-              document.querySelector('.preview__link').href = json.items[0].volumeInfo.canonicalVolumeLink;
-              let authorsLength = json.items[0].volumeInfo.authors.length;
-              let authorsArray = json.items[0].volumeInfo.authors;
-              if (authorsLength > 2) {
-                let lastAuthor = 
-                authorsArray[authorsArray.length - 1] = 'and ' +
-                  authorsArray[authorsArray.length - 1];
-                document.querySelector('.preview__author').textContent = authorsArray.join(', ');;
-              }
-              else if (authorsLength > 1) {
-                document.querySelector('.preview__author').textContent = authorsArray.join(' and ');
-              }
-              else document.querySelector('.preview__author').textContent = authorsArray[0];
-              document.querySelector('.preview__excerpt').textContent = json.items[0].volumeInfo.description;
-              //return fetch(json.items[0].selfLink, fetchHeaders)
-              //  .then(res => res.json())
-              //  .then(json => console.log(json));
-            }
-          })
-          .then(() => {
-            document.querySelector('.wrapper--preview').classList.remove('is-not-displayed');
-            // set up the add button for this book:
-            document.querySelector('.preview__submit').addEventListener('click', e => {
-              // socket the info to the server - put all data in an object above and send the object
-             // socket.emit('add to bookshelf', 
-            });
-          });
-          
+            if (json.totalItems) // if there are items.
+              populatePreview(json);
+            else console.log('There are no books found with the given search criteria.');
+          })          
       }
       else if (selectOption === 'find') {
         // search current bookshelf/bookshelves for the book in question via permalink?
@@ -134,7 +143,7 @@ window.onload = function () {
         // is this where socket is used?
 
         // replace all instances of the dollar sign to prevent NoSQL injection attack
-        socket.emit('search bookshelf', { search: userInput.replace(/\$/g, '') });
+        socket.emit('READ.bookshelf.query', { search: userInput.replace(/\$/g, '') });
       }
 
     });
@@ -180,3 +189,66 @@ function playSplashPageAnimation (index) {
   });
 }
 
+
+function populatePreview (json) {
+
+  let bookObject = {};
+
+  document.querySelector('.preview__link').textContent = json.items[0].volumeInfo.title;
+  document.querySelector('.preview__link').href = json.items[0].volumeInfo.canonicalVolumeLink;
+  let authorsLength = json.items[0].volumeInfo.authors.length;
+  let authorsArray = json.items[0].volumeInfo.authors;
+  if (authorsLength > 2) {
+    let lastAuthor = 
+    authorsArray[authorsArray.length - 1] = 'and ' +
+      authorsArray[authorsArray.length - 1];
+    document.querySelector('.preview__author').textContent = authorsArray.join(', ');;
+  }
+  else if (authorsLength > 1) {
+    document.querySelector('.preview__author').textContent = authorsArray.join(' and ');
+  }
+  else document.querySelector('.preview__author').textContent = authorsArray[0];
+  document.querySelector('.preview__description').textContent = json.items[0].volumeInfo.description;
+
+  // display the preview
+  document.querySelector('.wrapper--preview').classList.remove('is-not-displayed');
+
+  // set up the add button for this book:
+  document.querySelector('.preview__submit').addEventListener('click', e => {
+    // socket the info to the server - put all data in an object above and send the object
+
+    bookObject.title = json.items[0].volumeInfo.title;
+    bookObject.author = json.items[0].volumeInfo.authors;
+    bookObject.description = json.items[0].volumeInfo.description;
+    bookObject.thumbnail = json.items[0].volumeInfo.imageLinks.thumbnail;
+    console.log('bookObject thumbnail: ' + bookObject.thumbnail);
+    json.items[0].volumeInfo.industryIdentifiers.forEach(id => {
+      if (id.type === 'ISBN_10')
+        bookObject.ISBN_10 = id.identifier;
+      else if (id.type === 'ISBN_13')
+        bookObject.ISBN_13 = id.identifier;
+    });
+
+    socket.emit('CREATE.book', bookObject);
+  });
+}
+
+
+function addBook (data) {
+  let fragment = new DocumentFragment();
+  // mvp - img and data.id
+  let newImg = document.createElement('img');
+  newImg.classList.add('book__image');
+  newImg.src = data.data.thumbnail;
+  console.log(data.data.thumbnail);
+
+  let newDiv = document.createElement('div');
+  newDiv.classList.add('book');
+  newDiv.classList.add('data-id=' + data.data.id);
+  newDiv.appendChild(newImg);
+
+  fragment.appendChild(newDiv);
+  
+  document.querySelector('.wrapper--bookshelf').appendChild(fragment);
+
+}

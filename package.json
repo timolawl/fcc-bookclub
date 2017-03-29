@@ -32,7 +32,6 @@
     "morgan": "^1.8.1",
     "neverbounce": "^0.2.3",
     "node-fetch": "^1.6.3",
-    "node-uuid": "^1.4.8",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "pug": "^2.0.0-beta11",

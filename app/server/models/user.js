@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
 });
 
 
-// conver to using promises
+// convert to using promises
 userSchema.pre('save', function (next) {
   const user = this;
   // only hash the password if it has been modified or is new

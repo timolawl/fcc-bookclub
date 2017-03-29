@@ -21,7 +21,7 @@ module.exports = (app, passport) => {
             res.render('userform', { path: 'signup', message: req.flash('signupMessage') });
         })
         .post(passport.authenticate('local-signup', {
-            successRedirect: '/mybooks',
+            successRedirect: '/mybookshelf',
             failureRedirect: '/signup',
             failureFlash: true
         }));
@@ -31,7 +31,7 @@ module.exports = (app, passport) => {
             res.render('userform', { path: 'login', message: req.flash('loginMessage') }); // should I only have one file between signup and login? Just pass in an object to specify which is which?
         })
         .post(passport.authenticate('local-login', {
-            successRedirect: '/mybooks',
+            successRedirect: '/mybookshelf',
             failureRedirect: '/login',
             failureFlash: true
         }));
@@ -148,7 +148,7 @@ function isLoggedIn (req, res, next) {
 
 function isNotLoggedIn (req, res, next) {
     if (req.isAuthenticated())
-        res.redirect('/mybooks');
+        res.redirect('/mybookshelf');
     else return next();
 }
 /*

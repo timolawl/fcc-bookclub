@@ -44,3 +44,7 @@ input[type='submit'] {
     cursor: pointer;
   }
 }
+
+div:empty {
+  display: none;
+}
