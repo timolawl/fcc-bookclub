@@ -55,7 +55,7 @@ module.exports = io => {
         //
         socketBook.id = newBook.id;
 
-        socket.to('allbookshelves').emit('CREATE.book.render', { data: socketBook });
+        socket.to('allbookshelves').emit('CREATE.book.render', { book: newBook });
         // if the user is the same as the submitter, add it to his or her bookshelf
         // check for room, if user is in my
         socket.emit('CREATE.book.render', { book: newBook });
@@ -63,7 +63,8 @@ module.exports = io => {
     });
 
     socket.on('READ.book', data => {
-      Book.findOne({ id: mongoose.Schema.Types.ObjectId(data.bookId) }).exec((err, book) => {
+      // mongoose.Schema.Types.ObjectId(data.bookId)
+      Book.findOne({ _id: data.bookId }).exec((err, book) => {
         if (err) throw err;
         if (!book) console.log('Error, book not found...');
         else {

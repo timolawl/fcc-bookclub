@@ -249,14 +249,20 @@ function displayPreview (data, source) {
         bookObject.ISBN_13 = id.identifier;
     });
 
-    document.querySelector('.preview__submit').addEventListener('click', function createBook () {
-      // socket the info to the server - put all data in an object above and send the object
-      socket.emit('CREATE.book', bookObject);
-      // cleanup - otherwise it will keep adding the first book
-      document.querySelector('.preview__submit').removeEventListener('click', createBook);
-    });
+    document.querySelector('.preview__submit').classList.remove('is-not-displayed');
+
+    document.querySelector('.preview__submit').addEventListener('click', createBook(bookObject));
   }
   else if (source === 'internal') {
+    // remove the add button - internal source means the display preview is generated from a
+    // click of one of the book images
+    if (document.querySelector('.preview__submit')) {
+      document.querySelector('.preview__submit').removeEventListener('click', createBook);
+      // hide the icon as well.
+      document.querySelector('.preview__submit').classList.add('is-not-displayed');
+    }
+    
+
     bookObject.title = data.title;
     bookObject.author = data.author;
     bookObject.description = data.description;
@@ -291,7 +297,7 @@ function displayPreview (data, source) {
 
 }
 
-
+// add/display book to bookshelf/bookshelves
 function displayBook (book) {
   let fragment = new DocumentFragment();
   // mvp - img and data.id
@@ -301,16 +307,28 @@ function displayBook (book) {
 
   let newDiv = document.createElement('div');
   newDiv.classList.add('book');
-  newDiv.classList.add('data-id=' + book.id);
+  newDiv.classList.add('data-id=' + book._id);
   newDiv.appendChild(newImg);
 
   // on click shows the preview for the book
   newDiv.addEventListener('click', e => {
     //console.log(book);
-    socket.emit('READ.book', { bookId: book.id });
+    socket.emit('READ.book', { bookId: book._id });
+    
   });
 
   fragment.appendChild(newDiv);
   
   document.querySelector('.wrapper--bookshelf').appendChild(fragment);
 }
+
+
+// event listener function
+function createBook (book) {
+  socket.emit('CREATE.book', book);
+  // cleanup - otherwise it will keep adding the first book
+  document.querySelector('.preview__submit').removeEventListener('click', createBook);
+}
+
+
+
