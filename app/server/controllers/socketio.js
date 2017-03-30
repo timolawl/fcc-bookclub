@@ -1,5 +1,7 @@
 'use strict';
 
+const mongoose = require('mongoose');
+
 const fetch = require('node-fetch');
 
 const User = require('../models/user');
@@ -40,13 +42,13 @@ module.exports = io => {
       newBook.author = socketBook.author = data.author;
       newBook.description = socketBook.description = data.description;
       newBook.thumbnail = socketBook.thumbnail = data.thumbnail;
+      newBook.link = socketBook.link = data.link;
       newBook.ISBN_10 = socketBook.ISBN_10 = data.ISBN_10 || '';
       newBook.ISBN_13 = socketBook.ISBN_13 = data.ISBN_13 || '';
       newBook.dateAdded = socketBook.dateAdded = Date.now();
       newBook.currentOwner = userID; // passing this to client is probably a bad idea
       newBook.save(err => {
         if (err) console.error(err);
-        console.log('book has been added!');
         // pass mongodDB document id as identifier for the book to client....sounds dangerous?
         // but the alternative to generate a nonce that while small has a chance of colliding
         // not sure what the best option is.
@@ -56,24 +58,61 @@ module.exports = io => {
         socket.to('allbookshelves').emit('CREATE.book.render', { data: socketBook });
         // if the user is the same as the submitter, add it to his or her bookshelf
         // check for room, if user is in my
-        socket.emit('CREATE.book.render', { data: socketBook });
+        socket.emit('CREATE.book.render', { book: newBook });
+      });
+    });
 
+    socket.on('READ.book', data => {
+      Book.findOne({ id: mongoose.Schema.Types.ObjectId(data.bookId) }).exec((err, book) => {
+        if (err) throw err;
+        if (!book) console.log('Error, book not found...');
+        else {
+          console.log(data.bookId);
+          console.log(book);
+          socket.emit('READ.book.render', { book: book });
+        }
       });
     });
 
     // population request from client
     socket.on('READ.bookshelves.all', data => {
       // retrieve all books sorted by date added and return
+      Book.find({}).sort({ dateAdded: -1 }).exec((err, books) => {
+        if (err) throw err;
+        if (!books) console.log('no books!');
+        else {
+          socket.emit('READ.bookshelves.all.render', { books: books });
+        }
+      });
     });
 
     // population request from client
     socket.on('READ.bookshelf.all', data => {
-      
+      Book.find({ currentOwner: userID }).sort({ dateAdded: -1 }).exec((err, books) => {
+        if (err) throw err;
+        if (!books) console.log('no books here!');
+        else {
+          socket.emit('READ.bookshelf.all.render', { books: books });
+        }
+      });
     });
 
     // search request from client
     socket.on('READ.bookshelves.query', data => {
-      
+      Book.find({ $or: [{ title: data.search },
+                        { author: data.search },
+                        { ISBN_10: data.search },
+                        { ISBN_13: data.search }] })
+          .sort({ dateAdded: -1 })
+          .exec((err, books) => {
+            if (err) throw err;
+            if (!books) {
+              socket.emit('READ.bookshelves.query.render', {});
+            }
+            else {
+              socket.emit('READ.bookshelves.query.render', { books: books });
+            }
+          });
     });
 
     // search request from client

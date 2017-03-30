@@ -81,30 +81,66 @@ window.onload = function () {
   if (location.pathname.match(/^\/allbookshelves\/?$/i)) {
     socket.on('CREATE.book.render', data => {
       // add book to the front of the book list
-      addBook(data);
+      displayBook(data.book);
 
     });
 
     socket.emit('READ.bookshelves.all', {});
 
-    socket.on('READ.bookshelves.render', data => {
-    
+    socket.on('READ.book.render', data => {
+      displayPreview(data.book, 'internal');
+    });
+
+    socket.on('READ.bookshelves.all.render', data => {
+      // display all books in order:
+      for (let i = 0; i < data.books.length; i++) {
+        displayBook(data.books[i]);
+      }
     });
 
     socket.on('UPDATE.bookshelves.render', data => {
       
     });
+
+    // socket.emit -> READ.bookshelf.query
+    document.querySelector('.search__bar__submit').addEventListener('click', e => {
+      let userInput = document.querySelector('.search__bar__input--allbookshelves').value;
+        socket.emit('READ.bookshelves.query', { search: userInput.replace(/\$/g, '') });
+    });
+
+    socket.on('READ.bookshelf.query.render', data => {
+      // hide the 'all' results
+      if (data) { // if there exists results
+      
+      }
+      else {
+        // display an empty result
+      }
+
+      // when the query results are closed,
+      // show the 'all' results again
+    });
+
   }
+
+/************************************************************/
 
   if (location.pathname.match(/^\/mybookshelf\/?$/i)) {
     socket.on('CREATE.book.render', data => {
-      addBook(data);
+      displayBook(data.book);
     });
 
     socket.emit('READ.bookshelf.all', {});
 
-    socket.on('READ.bookshelf.render', data => {
-      
+    socket.on('READ.book.render', data => {
+      displayPreview(data.book, 'internal');
+    });
+
+
+    socket.on('READ.bookshelf.all.render', data => {
+      for (let i = 0; i < data.books.length; i++) {
+        displayBook(data.books[i]);
+      }
     });
 
     socket.on('UPDATE.bookshelf.render', data => {
@@ -113,6 +149,9 @@ window.onload = function () {
       
     });
 
+
+    // add -> CREATE.book
+    // find -> READ.bookshelf.query
     document.querySelector('.search__bar__submit').addEventListener('click', e => {
       // check the select option first
       let selectOption = document.querySelector('.search__bar__option').value;
@@ -128,7 +167,7 @@ window.onload = function () {
           .then(res => res.json())
           .then(json => {
             if (json.totalItems) // if there are items.
-              populatePreview(json);
+              displayPreview(json, 'external');
             else console.log('There are no books found with the given search criteria.');
           })          
       }
@@ -148,9 +187,11 @@ window.onload = function () {
 
     });
   }
-
 };
 
+/*******************************************/
+
+// splash animation for the index page
 function playSplashPageAnimation (index) {
   let words = ['ideas', 'adventure', 'inspiration', 'books', 'swap'];
 
@@ -189,15 +230,46 @@ function playSplashPageAnimation (index) {
   });
 }
 
-
-function populatePreview (json) {
-
+// populate preview after a book search - what if not 'search to add'
+function displayPreview (data, source) {
   let bookObject = {};
 
-  document.querySelector('.preview__link').textContent = json.items[0].volumeInfo.title;
-  document.querySelector('.preview__link').href = json.items[0].volumeInfo.canonicalVolumeLink;
-  let authorsLength = json.items[0].volumeInfo.authors.length;
-  let authorsArray = json.items[0].volumeInfo.authors;
+  if (source === 'external') { // google api
+    let json = data;
+
+    bookObject.title = json.items[0].volumeInfo.title;
+    bookObject.author = json.items[0].volumeInfo.authors;
+    bookObject.description = json.items[0].volumeInfo.description;
+    bookObject.thumbnail = json.items[0].volumeInfo.imageLinks.thumbnail;
+    bookObject.link = json.items[0].volumeInfo.canonicalVolumeLink;
+    json.items[0].volumeInfo.industryIdentifiers.forEach(id => {
+      if (id.type === 'ISBN_10')
+        bookObject.ISBN_10 = id.identifier;
+      else if (id.type === 'ISBN_13')
+        bookObject.ISBN_13 = id.identifier;
+    });
+
+    document.querySelector('.preview__submit').addEventListener('click', function createBook () {
+      // socket the info to the server - put all data in an object above and send the object
+      socket.emit('CREATE.book', bookObject);
+      // cleanup - otherwise it will keep adding the first book
+      document.querySelector('.preview__submit').removeEventListener('click', createBook);
+    });
+  }
+  else if (source === 'internal') {
+    bookObject.title = data.title;
+    bookObject.author = data.author;
+    bookObject.description = data.description;
+    //bookObject.thumbnail = data.thumbnail; // not needed for preview
+    bookObject.link = data.link;
+    // ISBNs also not needed for preview
+  }
+  
+  console.log(bookObject);
+  document.querySelector('.preview__link').textContent = bookObject.title;
+  document.querySelector('.preview__link').href = bookObject.link;
+  let authorsLength = bookObject.author.length;
+  let authorsArray = bookObject.author;
   if (authorsLength > 2) {
     let lastAuthor = 
     authorsArray[authorsArray.length - 1] = 'and ' +
@@ -208,47 +280,37 @@ function populatePreview (json) {
     document.querySelector('.preview__author').textContent = authorsArray.join(' and ');
   }
   else document.querySelector('.preview__author').textContent = authorsArray[0];
-  document.querySelector('.preview__description').textContent = json.items[0].volumeInfo.description;
+  document.querySelector('.preview__description').textContent = bookObject.description;
+
+
 
   // display the preview
   document.querySelector('.wrapper--preview').classList.remove('is-not-displayed');
 
-  // set up the add button for this book:
-  document.querySelector('.preview__submit').addEventListener('click', e => {
-    // socket the info to the server - put all data in an object above and send the object
 
-    bookObject.title = json.items[0].volumeInfo.title;
-    bookObject.author = json.items[0].volumeInfo.authors;
-    bookObject.description = json.items[0].volumeInfo.description;
-    bookObject.thumbnail = json.items[0].volumeInfo.imageLinks.thumbnail;
-    console.log('bookObject thumbnail: ' + bookObject.thumbnail);
-    json.items[0].volumeInfo.industryIdentifiers.forEach(id => {
-      if (id.type === 'ISBN_10')
-        bookObject.ISBN_10 = id.identifier;
-      else if (id.type === 'ISBN_13')
-        bookObject.ISBN_13 = id.identifier;
-    });
 
-    socket.emit('CREATE.book', bookObject);
-  });
 }
 
 
-function addBook (data) {
+function displayBook (book) {
   let fragment = new DocumentFragment();
   // mvp - img and data.id
   let newImg = document.createElement('img');
   newImg.classList.add('book__image');
-  newImg.src = data.data.thumbnail;
-  console.log(data.data.thumbnail);
+  newImg.src = book.thumbnail;
 
   let newDiv = document.createElement('div');
   newDiv.classList.add('book');
-  newDiv.classList.add('data-id=' + data.data.id);
+  newDiv.classList.add('data-id=' + book.id);
   newDiv.appendChild(newImg);
+
+  // on click shows the preview for the book
+  newDiv.addEventListener('click', e => {
+    //console.log(book);
+    socket.emit('READ.book', { bookId: book.id });
+  });
 
   fragment.appendChild(newDiv);
   
   document.querySelector('.wrapper--bookshelf').appendChild(fragment);
-
 }

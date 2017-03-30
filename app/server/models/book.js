@@ -10,6 +10,7 @@ const bookSchema = new mongoose.Schema({
   author          : [ { type: String, required: true } ],
   description     : { type: String },
   thumbnail       : { type: String },
+  link            : { type: String },
   ISBN_10         : { type: Number },
   ISBN_13         : { type: Number },
   dateAdded       : { type: Date, default: Date.now, required: true },
