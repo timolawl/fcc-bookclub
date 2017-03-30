@@ -48,40 +48,13 @@ module.exports = (app, passport) => {
             res.render('userform', { path: 'reset' });
         });
 */
-    app.route('/createpoll')
-        .get(isLoggedIn, (req, res) => {
-            req.flash('createPollMessage', 'Invalid entries. Please try again.');
-            res.render('pollform', { loggedIn: 'true', path: 'createpoll', message: req.flash('createPollMessage') }); // each option needs to pass through logIn middleware. Using loggedIn for setting the right nav bar..
-        })
-        .post((req, res, next) => {
-          if (req.isAuthenticated()) {
-            return next();
-          }
-          else res.redirect('/');
-        }, controller.createpoll); // eschewing duplication check
-  /*
-        .post(isUnique, (req, res) => { // check if there is identical?
-            nonce = uuid.v4(); // save this to the db, along with the req body.
-            
-            // leave off here? **NEED TO SAVE THE req.body stuff to the schema**
-            // What else can be in the controller? Would this essentially be the
-            // middleware that separates out the talking to the database, leaving
-            // the routes relatively clean?
-
-            // save nonce as permalink, name and options as initial data
-            // how do I create a poll so that I have options, but no votes yet?
-            // this has more to do with rendering in Chart js than it does the db.
-            res.redirect('/' + nonce);
-            console.log(req.body);
-        });
-*/
     app.route('/allbookshelves')
       .get((req, res) => {
 //      .get(isLoggedIn, (req, res) => {
           // no need to join a socket room here because at this page, nothing will change at this level
         if (req.isAuthenticated())
           res.render('allbookshelves', { loggedIn: 'true', path: 'allbookshelves' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
-        else res.render('allbookshelves', {loggedIn: 'false', path: 'allbookshelves' });
+        else res.render('allbookshelves', { loggedIn: 'false', path: 'allbookshelves' });
       });
 
     app.route('/mybookshelf')
@@ -90,12 +63,6 @@ module.exports = (app, passport) => {
           // no need to join a socket room here because at this page, nothing will change at this level
         res.render('mybookshelf', { loggedIn: 'true', path: 'mybookshelf' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
       });
-
-    app.route(/^\/poll\/[0-9a-f-]+$/) // nonce path; I'll need to retrieve the poll from this permalink somehow... this also needs to verify the existence of the path in the server, otherwise display error.
-        .get(controller.renderpoll)
-        
-        .delete(controller.deletepoll);
-
 
     app.route('/request')
       .get(isLoggedIn, (req, res) => {
@@ -113,16 +80,10 @@ module.exports = (app, passport) => {
       });
 
     app.route('/settings')
-      .get(isLoggedIn, (req, res) => {
-            res.render('userform', { loggedIn: 'true', path: 'settings', message: req.flash('signupMessage') });
-        });
-  /*
-        .post(passport.authenticate('local-signup', {
-            successRedirect: '/',
-            failureRedirect: '/signup',
-            failureFlash: true
-        }));
-        */
+      .get(isLoggedIn, controller.getSettings)
+  
+      .post(isLoggedIn, controller.saveSettings);
+        
 
 /*
       .get((req, res) => {
@@ -136,8 +97,6 @@ module.exports = (app, passport) => {
       else res.render('404', { loggedIn: 'false', path: '404' });
     });
     //app.use((req, res) => { res.status(400).send('Bad request.'); });
-
-
 };
 
 function isLoggedIn (req, res, next) {
@@ -151,11 +110,4 @@ function isNotLoggedIn (req, res, next) {
         res.redirect('/mybookshelf');
     else return next();
 }
-/*
-function isUnique (req, res, next) { // check if the poll name is unique before creating
-    if (controller.checkUnique)
-        return next();
-    req.flash('uniqueMessage', 'Name of poll is not unique.');
-    res.redirect('/createpoll');
-}
-  */
+

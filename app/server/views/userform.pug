@@ -17,27 +17,49 @@ include /includes/header.pug
     if path != 'settings'
       label.form__label(for='email') Email
       input.form__input.form__input--email(type='email' name='email' pattern='^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9]+\.[a-zA-Z0-9-.]+$' maxlength='100' required)
-    label.form__label(for='password') Password
-    input.form__input.form__input--password(type='password' name='password' pattern='^.{6,50}$' required)
-    if path != 'login'
+      label.form__label(for='password') Password
+      input.form__input.form__input--password(type='password' name='password' pattern='^.{6,50}$' required)
+    if path == 'signup'
       label.form__label(for='confirm') Confirm Password
       input.form__input.form__input--confirm(type='password' name='confirm' pattern='^.{6,50}$' required)
     if path == 'settings'
-      label.form__label(for='address-line-1') Address 1
-      input.form__input.form__input--address-line-1(type='text' name='address-line-1')
-      label.form__label(for='address-line-2') Address 2
-      input.form__input.form__input--address-line-1(type='text' name='address-line-2')
-      label.form__label(for='city') City
-      input.form__input.form__input--city(type='text' name='city')
-      label.form__label(for='state') State
-      input.form__input.form__input--state(type='text' name='state' pattern='^[A-Z]{2}$')
-      label.form__label(for='zip') Zip
-      input.form__input.form__input--zip(type='text' name='zip' pattern='^\d{5}(?:[-\s]\d{4})?$')
+      if userInfo
+        label.form__label(for='first-name') First Name
+        input.form__input.form__input--first-name(type='text' name='first-name' pattern="^(?:\\w+[\\w.'-]*(?: [\\w.'-]+)*){1,50}$" required value=userInfo['first-name'])
+        label.form__label(for='last-name') Last Name
+        input.form__input.form__input--last-name(type='text' name='last-name' pattern="^(?:\\w+[\\w.'-]*(?: [\\w.'-]+)*){1,50}$" required value=userInfo['last-name'])
+        label.form__label(for='address-line-1') Address 1
+        input.form__input.form__input--address-line-1(type='text' name='address-line-1' pattern="^(?:\\w+[\\w.'-]*(?: [\\w.'-]+)*){1,100}$" required value=userInfo['address-line-1'])
+        label.form__label(for='address-line-2') Address 2
+        input.form__input.form__input--address-line-1(type='text' name='address-line-2' pattern="^(?:\\w+[\\w.'-]*(?: [\\w.'-]+)*){1,100}$" value=userInfo['address-line-2'])
+        label.form__label(for='city') City
+        input.form__input.form__input--city(type='text' name='city' pattern="^(?:\\w+[\\w.'-]*(?: [\\w.'-]+)*){1,100}$" required value=userInfo.city)
+        label.form__label(for='state') State
+        input.form__input.form__input--state(type='text' name='state' pattern='^[A-Z]{2}$' required value=userInfo.state)
+        label.form__label(for='zip') Zip
+        input.form__input.form__input--zip(type='text' name='zip' pattern='^\\d{5}(?:[-\\s]\\d{4})?$' required value=userInfo.zip)
+      else
+        label.form__label(for='first-name') First Name
+        input.form__input.form__input--first-name(type='text' name='first-name' pattern="^(?:\\w+[\\w.'-]*(?: [\\w.'-]+)*){1,50}$" required)
+        label.form__label(for='last-name') Last Name
+        input.form__input.form__input--last-name(type='text' name='last-name' pattern="^(?:\\w+[\\w.'-]*(?: [\\w.'-]+)*){1,50}$" required)
+        label.form__label(for='address-line-1') Address 1
+        input.form__input.form__input--address-line-1(type='text' name='address-line-1' pattern="^(?:\\w+[\\w.'-]*(?: [\\w.'-]+)*){1,100}$" required)
+        label.form__label(for='address-line-2') Address 2
+        input.form__input.form__input--address-line-1(type='text' name='address-line-2' pattern="^(?:\\w+[\\w.'-]*(?: [\\w.'-]+)*){1,100}$")
+        label.form__label(for='city') City
+        input.form__input.form__input--city(type='text' name='city' pattern="^(?:\\w+[\\w.'-]*(?: [\\w.'-]+)*){1,100}$" required)
+        label.form__label(for='state') State
+        input.form__input.form__input--state(type='text' name='state' pattern='^[A-Z]{2}$' required)
+        label.form__label(for='zip') Zip
+        input.form__input.form__input--zip(type='text' name='zip' pattern='^\\d{5}(?:[-\\s]\\d{4})?$' required)
+
+
     case path
       when 'signup'
         input.form__submit(type='submit' formaction='/signup' value='Sign Up')
       when 'login'
         input.form__submit(type='submit' formaction='/login' value='Log In')
       when 'settings'
-        input.form__submit(type='submit' formaction='/settings' value='Update Settings')
+        input.form__submit(type='submit' formaction='/settings' value='Update Information')
 include /includes/footer.pug
