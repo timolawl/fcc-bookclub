@@ -3,7 +3,6 @@
 const mongoose = require('mongoose');
 
 const fetch = require('node-fetch');
-const validator = require('validator');
 
 const User = require('../models/user');
 const Book = require('../models/book');
@@ -127,10 +126,10 @@ module.exports = io => {
           .exec((err, books) => {
         if (err) throw err;
         if (!books) {
-          socket.emit('READ.bookshelves.query.render', {});
+          socket.emit('READ.bookshelf.query.render', {});
         }
         else {
-          socket.emit('READ.bookshelves.query.render', { query: data.search, books: books });
+          socket.emit('READ.bookshelf.query.render', { query: data.search, books: books });
         }
       });
     });

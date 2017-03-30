@@ -229,6 +229,15 @@ function playSplashPageAnimation (index) {
 function displayPreview (data, source) {
   let bookObject = {};
 
+
+  // event listener function
+  function createBook () {
+    socket.emit('CREATE.book', bookObject);
+    // cleanup - otherwise it will keep adding the first book
+    document.querySelector('.preview__submit').removeEventListener('click', createBook);
+  }
+
+
   if (source === 'external') { // google api
     let json = data;
 
@@ -244,13 +253,6 @@ function displayPreview (data, source) {
         bookObject.ISBN_13 = id.identifier;
     });
 
-
-    // event listener function
-    function createBook () {
-      socket.emit('CREATE.book', bookObject);
-      // cleanup - otherwise it will keep adding the first book
-      document.querySelector('.preview__submit').removeEventListener('click', createBook);
-    }
 
     document.querySelector('.preview__submit').classList.remove('is-not-displayed');
 
