@@ -3,6 +3,7 @@
 const mongoose = require('mongoose');
 
 const fetch = require('node-fetch');
+const validator = require('validator');
 
 const User = require('../models/user');
 const Book = require('../models/book');
@@ -100,26 +101,38 @@ module.exports = io => {
 
     // search request from client
     socket.on('READ.bookshelves.query', data => {
-      Book.find({ $or: [{ title: data.search },
-                        { author: data.search },
-                        { ISBN_10: data.search },
-                        { ISBN_13: data.search }] })
+      Book.find({ $or: [{ ISBN_10: data.search },
+                                { ISBN_13: data.search },
+                                { title: { $regex: data.search, $options: 'i' } },
+                                { author: { $regex: data.search, $options: 'i' } }] })
           .sort({ dateAdded: -1 })
           .exec((err, books) => {
-            if (err) throw err;
-            if (!books) {
-              socket.emit('READ.bookshelves.query.render', {});
-            }
-            else {
-              socket.emit('READ.bookshelves.query.render', { books: books });
-            }
-          });
+        if (err) throw err;
+        if (!books) {
+          socket.emit('READ.bookshelves.query.render', {});
+        }
+        else {
+          socket.emit('READ.bookshelves.query.render', { query: data.search, books: books });
+        }
+      });
     });
 
     // search request from client
     socket.on('READ.bookshelf.query', data => {
-      // find author or title using $or in user's bookshelf, then return
-
+      Book.find({ $or: [{ ISBN_10: data.search },
+                                { ISBN_13: data.search },
+                                { title: { $regex: data.search, $options: 'i' } },
+                                { author: { $regex: data.search, $options: 'i' } }] })
+          .sort({ dateAdded: -1 })
+          .exec((err, books) => {
+        if (err) throw err;
+        if (!books) {
+          socket.emit('READ.bookshelves.query.render', {});
+        }
+        else {
+          socket.emit('READ.bookshelves.query.render', { query: data.search, books: books });
+        }
+      });
     });
 
     // successful swap -> bookshelves will need to display the swapped books ability

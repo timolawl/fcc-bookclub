@@ -7,6 +7,18 @@
   height: auto;
 }
 
+.bookshelf {
+  &--complete {
+  
+  }
+
+  &--query {
+    margin-top: 0;
+    border-top: none;
+    background-color: map-get($color-stack, bg--base);
+  }
+}
+
 .book {
   display: inline-block;
   border: 1px solid gray;
@@ -19,4 +31,8 @@
   &__image {
     display: block; // get rid of white space below images
   }
+}
+
+.no-result {
+  padding: 1rem;
 }

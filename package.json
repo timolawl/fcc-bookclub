@@ -4,7 +4,7 @@
   "description": "BookSwap, a Free Code Camp full-stack project",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "babel-node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "sasslintConfig": ".sass-lint.yml",

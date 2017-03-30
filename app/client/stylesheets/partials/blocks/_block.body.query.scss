@@ -1,0 +1,34 @@
+// _block.body.query.scss
+//
+// query display between search/preview and bookshelf
+
+.wrapper--query {
+  @include setWrapper(1rem, true);
+  margin-bottom: 0;
+}
+
+.query {
+  &__description {
+    font-size: 20px;
+    display: inline-block;
+
+    &__explanatory-string {
+      
+    }
+
+    &__query-string {
+      color: map-get($color-stack, font__link--selected);
+    }
+  }
+
+  &__close {
+    border: 1px solid map-get($color-stack, font__link--base);
+    height: 2rem;
+    width: 2rem;
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    @include setBgColorAndHover();
+  }
+}

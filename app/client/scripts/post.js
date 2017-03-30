@@ -81,7 +81,7 @@ window.onload = function () {
   if (location.pathname.match(/^\/allbookshelves\/?$/i)) {
     socket.on('CREATE.book.render', data => {
       // add book to the front of the book list
-      displayBook(data.book);
+      displayBook(data.book, false);
 
     });
 
@@ -94,7 +94,7 @@ window.onload = function () {
     socket.on('READ.bookshelves.all.render', data => {
       // display all books in order:
       for (let i = 0; i < data.books.length; i++) {
-        displayBook(data.books[i]);
+        displayBook(data.books[i], false);
       }
     });
 
@@ -108,17 +108,8 @@ window.onload = function () {
         socket.emit('READ.bookshelves.query', { search: userInput.replace(/\$/g, '') });
     });
 
-    socket.on('READ.bookshelf.query.render', data => {
-      // hide the 'all' results
-      if (data) { // if there exists results
-      
-      }
-      else {
-        // display an empty result
-      }
-
-      // when the query results are closed,
-      // show the 'all' results again
+    socket.on('READ.bookshelves.query.render', data => {
+      renderQuery(data);
     });
 
   }
@@ -127,7 +118,7 @@ window.onload = function () {
 
   if (location.pathname.match(/^\/mybookshelf\/?$/i)) {
     socket.on('CREATE.book.render', data => {
-      displayBook(data.book);
+      displayBook(data.book, false);
     });
 
     socket.emit('READ.bookshelf.all', {});
@@ -139,7 +130,7 @@ window.onload = function () {
 
     socket.on('READ.bookshelf.all.render', data => {
       for (let i = 0; i < data.books.length; i++) {
-        displayBook(data.books[i]);
+        displayBook(data.books[i], false);
       }
     });
 
@@ -184,8 +175,12 @@ window.onload = function () {
         // replace all instances of the dollar sign to prevent NoSQL injection attack
         socket.emit('READ.bookshelf.query', { search: userInput.replace(/\$/g, '') });
       }
-
     });
+
+    socket.on('READ.bookshelf.query.render', data => {
+      renderQuery(data);
+    });
+
   }
 };
 
@@ -249,9 +244,17 @@ function displayPreview (data, source) {
         bookObject.ISBN_13 = id.identifier;
     });
 
+
+    // event listener function
+    function createBook () {
+      socket.emit('CREATE.book', bookObject);
+      // cleanup - otherwise it will keep adding the first book
+      document.querySelector('.preview__submit').removeEventListener('click', createBook);
+    }
+
     document.querySelector('.preview__submit').classList.remove('is-not-displayed');
 
-    document.querySelector('.preview__submit').addEventListener('click', createBook(bookObject));
+    document.querySelector('.preview__submit').addEventListener('click', createBook);
   }
   else if (source === 'internal') {
     // remove the add button - internal source means the display preview is generated from a
@@ -298,7 +301,7 @@ function displayPreview (data, source) {
 }
 
 // add/display book to bookshelf/bookshelves
-function displayBook (book) {
+function displayBook (book, queryEvent) {
   let fragment = new DocumentFragment();
   // mvp - img and data.id
   let newImg = document.createElement('img');
@@ -318,17 +321,54 @@ function displayBook (book) {
   });
 
   fragment.appendChild(newDiv);
-  
-  document.querySelector('.wrapper--bookshelf').appendChild(fragment);
-}
+  if (queryEvent) {
+    document.querySelector('.bookshelf--query').appendChild(fragment);
+  }
+  else document.querySelector('.bookshelf--complete').appendChild(fragment);
 
-
-// event listener function
-function createBook (book) {
-  socket.emit('CREATE.book', book);
-  // cleanup - otherwise it will keep adding the first book
-  document.querySelector('.preview__submit').removeEventListener('click', createBook);
 }
 
 
 
+function renderQuery (data) {
+// hide the 'all' results
+  document.querySelector('.bookshelf--complete').classList.add('is-not-displayed');
+
+  let bookshelfQuery = document.querySelector('.bookshelf--query');
+  let bookshelfComplete = document.querySelector('.bookshelf--complete');
+  let wrapperQuery = document.querySelector('.wrapper--query');
+
+  // clear out old query results from element
+  while (bookshelfQuery.hasChildNodes()) {
+    bookshelfQuery.removeChild(bookshelfQuery.lastChild);
+  }
+
+  console.log(data);
+
+  document.querySelector('.query__description__query-string').textContent = data.query;
+  document.querySelector('.query__close').addEventListener('click', () => {
+    bookshelfComplete.classList.remove('is-not-displayed');
+    wrapperQuery.classList.add('is-not-displayed');
+    bookshelfQuery.classList.add('is-not-displayed');
+  });
+  bookshelfComplete.classList.add('is-not-displayed');
+  wrapperQuery.classList.remove('is-not-displayed');
+  bookshelfQuery.classList.remove('is-not-displayed');
+
+
+  if (data.books.length) { // if there exists results
+    for (let i = 0; i < data.books.length; i++) {
+      displayBook(data.books[i], true);
+    }
+  }
+  else {
+    let newDiv = document.createElement('div');
+    newDiv.textContent = 'No results match the query.';
+    newDiv.classList.add('no-result');
+    
+    document.querySelector('.bookshelf--query').appendChild(newDiv);
+
+   // document.querySelector('.bookshelf--no-results').classList.remove('is-not-displayed');
+    // display an empty result
+  }
+}
