@@ -2,29 +2,35 @@ include /includes/header.pug
 //
   .page-title: span Request
 include /includes/mixins/search-preview-bookshelf.pug
-.subsection
+.subsection.request__section--one
   .subsection__title
-    .request__step-number 1
+    .request__step-number.request__step-number--incomplete 1
     span Request
   +spb('Request')
-  .wrapper--request__selection
+  .wrapper--request__selection.is-not-displayed
     .request__selection__description
-      .selection--title Angels & Demons
-      .selection--author Dan Brown
+      .selection--title
+      .selection--author
     .request__selection__book-image
-      a.book__link(href='https://books.google.com/books?id=wiX1O1ZBdYoC&hl=en&source=gbs_api')
-        img.book__image(src='http://books.google.com/books/content?id=wiX1O1ZBdYoC&printsec=frontcover&img=1&zoom=1&source=gbs_api')
+      img.book__image
+    button.request__selection__close(type='button') &#10005;
 
-.subsection
+.subsection.request__section--two.is-not-displayed
   .subsection__title
-    .request__step-number 2
+    .request__step-number.request__step-number--incomplete 2
     span Offer
   +spb('Offer')
-  .wrapper--request__selection
-    span Offer:
-.subsection
+  .wrapper--request__selection.is-not-displayed
+    .request__selection__description
+      .selection--title
+      .selection--author
+    .request__selection__book-image
+      img.book__image
+    button.request__selection__close(type='button') &#10005;
+
+.subsection.request__section--three.is-not-displayed
   .subsection__title
-    .request__step-number 3
+    .request__step-number.request__step-number--incomplete 3
     span Confirm
   .wrapper--request__confirm
     button.request__button--swap(type='submit') Request Swap

@@ -17,9 +17,6 @@ function checkForm (path) {
     const inputs = document.getElementsByClassName('form__input');
     const submitBtn = document.querySelector('input[type="submit"]');
     submitBtn.disabled = true;
-    //const inherentBtnColor = submitBtn.style.background;
-    //submitBtn.style.background = 'gray';
-    // better way would be to fade it out with a blend? overlay?
 
     function validateInput () {
         let unique, pw, pwConfirm;
@@ -27,27 +24,20 @@ function checkForm (path) {
         submitBtn.disabled = true;
 
         if (Array.from(inputs).every(input => input.value.match(input.getAttribute('pattern')))) {
-            if (path === 'createpoll' && inputs.length >= 3) {
-                unique = new Set(Array.from(inputs).map(input => input.value));
-                if (inputs.length === unique.size)
-                    submitBtn.disabled = false;
+          if (path === 'signup') {
+            pw = form.querySelector('.form__input--password');
+            pwConfirm = form.querySelector('.form__input--confirm');
+            if (pw.value === pwConfirm.value) {
+              pw.style.outline = 'initial';
+              pwConfirm.style.outline = 'initial';
+              submitBtn.disabled = false;
             }
-            else if (path !== 'createpoll') {
-                if (path === 'signup') {
-                    pw = form.querySelector('.form__input--password');
-                    pwConfirm = form.querySelector('.form__input--confirm');
-                    if (pw.value === pwConfirm.value) {
-                        pw.style.outline = 'initial';
-                        pwConfirm.style.outline = 'initial';
-                        submitBtn.disabled = false;
-                    }
-                    else {
-                        pw.style.outline = '1px solid red';
-                        pwConfirm.style.outline = '1px solid red';
-                    }
-                }
-                else submitBtn.disabled = false;
+            else {
+              pw.style.outline = '1px solid red';
+              pwConfirm.style.outline = '1px solid red';
             }
+          }
+          else submitBtn.disabled = false;
         }
     }
     form.onkeyup = validateInput;
@@ -59,11 +49,15 @@ window.onload = function () {
   if (location.pathname.match(/^\/$/)) // if home path
     socket.emit('change room', { room: location.pathname }); // '/'
 
+  else socket.emit('change room', { room: location.pathname.toLowerCase().slice(1) });
+
+  /*
   if (location.pathname.match(/^\/(?:allbookshelves|mybookshelf)\/?$/i))
     socket.emit('change room', { room: location.pathname.toLowerCase().slice(1) });
 
   if (location.pathname.match(/^\/(?:signup|login|settings|allbookshelves|mybookshelf)\/?/i))
     socket.emit('leave room', { path: location.pathname.toLowerCase().slice(1) });
+    */
 
 /****************/    
 
@@ -88,7 +82,7 @@ window.onload = function () {
     socket.emit('READ.bookshelves.all', {});
 
     socket.on('READ.book.render', data => {
-      displayPreview(data.book, 'internal');
+      displayPreview(data.book, 'internal-query');
     });
 
     socket.on('READ.bookshelves.all.render', data => {
@@ -124,7 +118,7 @@ window.onload = function () {
     socket.emit('READ.bookshelf.all', {});
 
     socket.on('READ.book.render', data => {
-      displayPreview(data.book, 'internal');
+      displayPreview(data.book, 'internal-query');
     });
 
 
@@ -158,7 +152,7 @@ window.onload = function () {
           .then(res => res.json())
           .then(json => {
             if (json.totalItems) // if there are items.
-              displayPreview(json, 'external');
+              displayPreview(json, 'external-query');
             else console.log('There are no books found with the given search criteria.');
           })          
       }
@@ -180,8 +174,42 @@ window.onload = function () {
     socket.on('READ.bookshelf.query.render', data => {
       renderQuery(data);
     });
+  }
+
+/********************************************/
+
+  if (location.pathname.match(/^\/request\/?$/i)) {
+
+    socket.on('READ.book.render', data => {
+      displayPreview(data.book, 'internal--request');
+    });
+
+
+    // Step 1: query bookshelves
+    // socket.emit -> READ.bookshelves.query
+    document.querySelector('.request__section--one .search__bar__submit').addEventListener('click', e => {
+      let userInput = document.querySelector('.request__section--one .search__bar__input').value;
+      socket.emit('READ.bookshelves.query', { search: userInput.replace(/\$/g, '') });
+    });
+
+    socket.on('READ.bookshelves.query.render', data => {
+      renderQuery(data, 'step-one');
+    });
+
+    // Step 2: query bookshelf
+    document.querySelector('.request__section--two .search__bar__submit').addEventListener('click', e => {
+      let userInput = document.querySelector('.request__section--two .search__bar__input').value;
+      socket.emit('READ.bookshelf.query', { search: userInput.replace(/\$/g, '') });
+    });
+
+    socket.on('READ.bookshelf.query.render', data => {
+      renderQuery(data, 'step-two');
+    });
+
+    // Step 3: confirm step
 
   }
+
 };
 
 /*******************************************/
@@ -229,6 +257,9 @@ function playSplashPageAnimation (index) {
 function displayPreview (data, source) {
   let bookObject = {};
 
+  let requestSection;
+  let currentStep = null;
+
 
   // event listener function
   function createBook () {
@@ -238,7 +269,7 @@ function displayPreview (data, source) {
   }
 
 
-  if (source === 'external') { // google api
+  if (source === 'external--query') { // google api
     let json = data;
 
     bookObject.title = json.items[0].volumeInfo.title;
@@ -258,52 +289,101 @@ function displayPreview (data, source) {
 
     document.querySelector('.preview__submit').addEventListener('click', createBook);
   }
-  else if (source === 'internal') {
-    // remove the add button - internal source means the display preview is generated from a
-    // click of one of the book images
-    if (document.querySelector('.preview__submit')) {
-      document.querySelector('.preview__submit').removeEventListener('click', createBook);
-      // hide the icon as well.
-      document.querySelector('.preview__submit').classList.add('is-not-displayed');
-    }
-    
-
+  else {
     bookObject.title = data.title;
     bookObject.author = data.author;
     bookObject.description = data.description;
-    //bookObject.thumbnail = data.thumbnail; // not needed for preview
     bookObject.link = data.link;
-    // ISBNs also not needed for preview
+
+    if (source === 'internal--query') {
+      // remove the add button - internal source means the display preview is generated from a
+      // click of one of the book images
+      if (document.querySelector('.preview__submit')) {
+        document.querySelector('.preview__submit').removeEventListener('click', createBook);
+        // hide the icon as well.
+        document.querySelector('.preview__submit').classList.add('is-not-displayed');
+      }      
+    }
+    else if (source === 'internal--request') {
+      if (document.querySelector('.request__section--one .request__step-number').classList.contains('request__step-number--incomplete')) {
+        requestSection = document.querySelector('.request__section--one');
+        currentStep = 'one';
+        console.log('previewing step one!');
+      }
+      else if (document.querySelector('.request__section--two .request__step-number').classList.contains('request__step-number--incomplete')) {
+        requestSection = document.querySelector('.request__section--two');
+        currentStep = 'two';
+        console.log('previewing step two!');
+      }
+      else {
+        console.log('something went wrong..');
+      }
+
+      
+
+      requestSection.querySelector('.preview__submit').addEventListener('click', e => {
+        // select for request
+        // have it show up in the request selection
+        requestSection.querySelector('.selection--title').textContent = data.title;
+        requestSection.querySelector('.selection--author').textContent = parseAuthorArray(data.author);
+        requestSection.querySelector('.request__selection__book-image .book__image').src = data.thumbnail;
+
+
+        requestSection.querySelector('.wrapper--request__selection').classList.remove('is-not-displayed');
+
+        requestSection.querySelector('.request__step-number').classList.remove('request__step-number--incomplete');
+        requestSection.querySelector('.request__step-number').classList.add('request__step-number--complete');
+
+        
+        if (currentStep === 'one') {
+          requestSection.querySelector('.Request').classList.add('is-not-displayed');
+          document.querySelector('.request__section--two').classList.remove('is-not-displayed');
+        }
+        else if (currentStep === 'two') {
+          requestSection.querySelector('.Offer').classList.add('is-not-displayed');
+          document.querySelector('.request__section--three').classList.remove('is-not-displayed');
+        }
+      });
+    }
   }
   
+  // if not on request page, then set variable such that the below code performs for all conditions
+  if (!requestSection)
+    requestSection = document;
+
+  console.log(requestSection);
+
   console.log(bookObject);
-  document.querySelector('.preview__link').textContent = bookObject.title;
-  document.querySelector('.preview__link').href = bookObject.link;
+  requestSection.querySelector('.preview__link').textContent = bookObject.title;
+  requestSection.querySelector('.preview__link').href = bookObject.link;
+
+  //let authorsString = parseAuthorArray(bookObject.author);
+/*
   let authorsLength = bookObject.author.length;
   let authorsArray = bookObject.author;
   if (authorsLength > 2) {
     let lastAuthor = 
     authorsArray[authorsArray.length - 1] = 'and ' +
       authorsArray[authorsArray.length - 1];
-    document.querySelector('.preview__author').textContent = authorsArray.join(', ');;
+    requestSection.querySelector('.preview__author').textContent = authorsArray.join(', ');;
   }
   else if (authorsLength > 1) {
-    document.querySelector('.preview__author').textContent = authorsArray.join(' and ');
+    requestSection.querySelector('.preview__author').textContent = authorsArray.join(' and ');
   }
-  else document.querySelector('.preview__author').textContent = authorsArray[0];
-  document.querySelector('.preview__description').textContent = bookObject.description;
+  else requestSection.querySelector('.preview__author').textContent = authorsArray[0];
 
+  */
 
+  requestSection.querySelector('.preview__author').textContent = parseAuthorArray(bookObject.author);
+
+  requestSection.querySelector('.preview__description').textContent = bookObject.description;
 
   // display the preview
-  document.querySelector('.wrapper--preview').classList.remove('is-not-displayed');
-
-
-
+  requestSection.querySelector('.wrapper--preview').classList.remove('is-not-displayed');
 }
 
 // add/display book to bookshelf/bookshelves
-function displayBook (book, queryEvent) {
+function displayBook (book, queryEvent, requestSection) {
   let fragment = new DocumentFragment();
   // mvp - img and data.id
   let newImg = document.createElement('img');
@@ -322,33 +402,52 @@ function displayBook (book, queryEvent) {
     
   });
 
+  console.log(requestSection);
+
   fragment.appendChild(newDiv);
   if (queryEvent) {
-    document.querySelector('.bookshelf--query').appendChild(fragment);
+    if (requestSection) 
+      requestSection.querySelector('.bookshelf--query').appendChild(fragment);
+    else document.querySelector('.bookshelf--query').appendChild(fragment);
   }
-  else document.querySelector('.bookshelf--complete').appendChild(fragment);
+  else {
+    if (requestSection)
+      requestSection.querySelector('.bookshelf--complete').appendChild(fragment);
+    else document.querySelector('.bookshelf--complete').appendChild(fragment);
+  }
 
 }
 
 
 
-function renderQuery (data) {
+function renderQuery (data, requestStep) {
 // hide the 'all' results
   document.querySelector('.bookshelf--complete').classList.add('is-not-displayed');
 
-  let bookshelfQuery = document.querySelector('.bookshelf--query');
-  let bookshelfComplete = document.querySelector('.bookshelf--complete');
-  let wrapperQuery = document.querySelector('.wrapper--query');
+  let requestSection, bookshelfQuery, bookshelfComplete, wrapperQuery;
+
+  if (requestStep === 'step-one') {
+    requestSection = document.querySelector('.request__section--one');
+   }
+  else if (requestStep === 'step-two') {
+    console.log('rendering query for step two');
+    requestSection = document.querySelector('.request__section--two');
+  }
+  else requestSection = document;
+
+  bookshelfQuery = requestSection.querySelector('.bookshelf--query');
+  bookshelfComplete = requestSection.querySelector('.bookshelf--complete');
+  wrapperQuery = requestSection.querySelector('.wrapper--query');
 
   // clear out old query results from element
   while (bookshelfQuery.hasChildNodes()) {
     bookshelfQuery.removeChild(bookshelfQuery.lastChild);
   }
 
-  console.log(data);
+  
 
-  document.querySelector('.query__description__query-string').textContent = data.query;
-  document.querySelector('.query__close').addEventListener('click', () => {
+  requestSection.querySelector('.query__description__query-string').textContent = data.query;
+  requestSection.querySelector('.query__close').addEventListener('click', () => {
     bookshelfComplete.classList.remove('is-not-displayed');
     wrapperQuery.classList.add('is-not-displayed');
     bookshelfQuery.classList.add('is-not-displayed');
@@ -360,7 +459,7 @@ function renderQuery (data) {
 
   if (data.books.length) { // if there exists results
     for (let i = 0; i < data.books.length; i++) {
-      displayBook(data.books[i], true);
+      displayBook(data.books[i], true, requestSection);
     }
   }
   else {
@@ -368,9 +467,24 @@ function renderQuery (data) {
     newDiv.textContent = 'No results match the query.';
     newDiv.classList.add('no-result');
     
-    document.querySelector('.bookshelf--query').appendChild(newDiv);
-
-   // document.querySelector('.bookshelf--no-results').classList.remove('is-not-displayed');
-    // display an empty result
+    requestSection.querySelector('.bookshelf--query').appendChild(newDiv);
   }
+}
+
+
+function parseAuthorArray (authorsArray) {
+
+  // dont mutate original array
+  let arrClone = Array.prototype.slice.call(authorsArray); // in case not an array;
+
+  let authorsLength = arrClone.length;
+  if (authorsLength > 2) {
+    arrClone.join(', ');
+    arrClone[arrClone.length - 1] = 'and' + arrClone[arrClone.length - 1];
+    return arrClone;
+  }
+  else if (authorsLength > 1) {
+    return arrClone.join(' and ');
+  }
+  else return arrClone[0];
 }

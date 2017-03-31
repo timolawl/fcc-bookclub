@@ -1,15 +1,18 @@
 mixin spb(buttonLabel)
-  section
+  section(class=buttonLabel)
     .wrapper--search
       .wrapper__subwrapper--search 
-        if path != 'mybookshelf'
+        if path == 'allbookshelves'
           label.search__bar.search__bar__label Search
           input.search__bar.search__bar__input.search__bar__input--allbookshelves
-        else 
+        if path == 'mybookshelf'
           select.search__bar__option
             option(value='add') Search To Add
             option(value='find') Search To Find
             input.search__bar.search__bar__input.search__bar__input--mybookshelf
+        if path == 'request'
+          label.search__bar.search__bar__label Search
+          input.search__bar.search__bar__input
         button.search__bar.search__bar__submit(type='button') Submit
     .wrapper--preview.is-not-displayed
       .preview__title
