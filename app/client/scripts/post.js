@@ -181,7 +181,7 @@ window.onload = function () {
   if (location.pathname.match(/^\/request\/?$/i)) {
 
     socket.on('READ.book.render', data => {
-      displayPreview(data.book, 'internal--request');
+      displayPreview(data.book, 'internal-request');
     });
 
 
@@ -189,7 +189,7 @@ window.onload = function () {
     // socket.emit -> READ.bookshelves.query
     document.querySelector('.request__section--one .search__bar__submit').addEventListener('click', e => {
       let userInput = document.querySelector('.request__section--one .search__bar__input').value;
-      socket.emit('READ.bookshelves.query', { search: userInput.replace(/\$/g, '') });
+      socket.emit('READ.bookshelves.query', { search: userInput.replace(/\$/g, ''), request: true }); // specify that it is from the request path, and thus will not display own books
     });
 
     socket.on('READ.bookshelves.query.render', data => {
@@ -253,6 +253,10 @@ function playSplashPageAnimation (index) {
   });
 }
 
+
+/***************************************************/
+
+
 // populate preview after a book search - what if not 'search to add'
 function displayPreview (data, source) {
   let bookObject = {};
@@ -269,8 +273,10 @@ function displayPreview (data, source) {
   }
 
 
-  if (source === 'external--query') { // google api
+  if (source === 'external-query') { // google api
     let json = data;
+
+    console.log('external query');
 
     bookObject.title = json.items[0].volumeInfo.title;
     bookObject.author = json.items[0].volumeInfo.authors;
@@ -295,16 +301,16 @@ function displayPreview (data, source) {
     bookObject.description = data.description;
     bookObject.link = data.link;
 
-    if (source === 'internal--query') {
+    if (source === 'internal-query') {
       // remove the add button - internal source means the display preview is generated from a
       // click of one of the book images
       if (document.querySelector('.preview__submit')) {
         document.querySelector('.preview__submit').removeEventListener('click', createBook);
         // hide the icon as well.
         document.querySelector('.preview__submit').classList.add('is-not-displayed');
-      }      
+      }
     }
-    else if (source === 'internal--request') {
+    else if (source === 'internal-request') {
       if (document.querySelector('.request__section--one .request__step-number').classList.contains('request__step-number--incomplete')) {
         requestSection = document.querySelector('.request__section--one');
         currentStep = 'one';
@@ -318,8 +324,6 @@ function displayPreview (data, source) {
       else {
         console.log('something went wrong..');
       }
-
-      
 
       requestSection.querySelector('.preview__submit').addEventListener('click', e => {
         // select for request
@@ -336,12 +340,28 @@ function displayPreview (data, source) {
 
         
         if (currentStep === 'one') {
+          // bring up step two
           requestSection.querySelector('.Request').classList.add('is-not-displayed');
           document.querySelector('.request__section--two').classList.remove('is-not-displayed');
+          saveBookToSwap(data, 'request'); // should only get the book id
         }
         else if (currentStep === 'two') {
+          // birng up step three
           requestSection.querySelector('.Offer').classList.add('is-not-displayed');
           document.querySelector('.request__section--three').classList.remove('is-not-displayed');
+          saveBookToSwap(data, 'offer');
+
+          document.querySelector('.request__button--swap').addEventListener('click', e => {
+            //socket.emit('CREATE.transaction', { 
+          });
+          
+          // take out cancel - MVP
+          /*
+          document.querySelector('.request__button--cancel').addEventListener('click', e => {
+            // start over
+            
+          });
+          */
         }
       });
     }
@@ -351,10 +371,7 @@ function displayPreview (data, source) {
   if (!requestSection)
     requestSection = document;
 
-  console.log(requestSection);
-
-  console.log(bookObject);
-  requestSection.querySelector('.preview__link').textContent = bookObject.title;
+  requestSection.querySelector('.preview__title').textContent = bookObject.title;
   requestSection.querySelector('.preview__link').href = bookObject.link;
 
   //let authorsString = parseAuthorArray(bookObject.author);
@@ -382,6 +399,9 @@ function displayPreview (data, source) {
   requestSection.querySelector('.wrapper--preview').classList.remove('is-not-displayed');
 }
 
+/***************************************************/
+
+
 // add/display book to bookshelf/bookshelves
 function displayBook (book, queryEvent, requestSection) {
   let fragment = new DocumentFragment();
@@ -402,8 +422,6 @@ function displayBook (book, queryEvent, requestSection) {
     
   });
 
-  console.log(requestSection);
-
   fragment.appendChild(newDiv);
   if (queryEvent) {
     if (requestSection) 
@@ -418,8 +436,10 @@ function displayBook (book, queryEvent, requestSection) {
 
 }
 
+/***************************************************/
 
 
+// shows the query results
 function renderQuery (data, requestStep) {
 // hide the 'all' results
   document.querySelector('.bookshelf--complete').classList.add('is-not-displayed');
@@ -471,20 +491,30 @@ function renderQuery (data, requestStep) {
   }
 }
 
+/***************************************************/
 
+// parses out the array to a string to display properly in various places
 function parseAuthorArray (authorsArray) {
 
+  let arrClone;
+
   // dont mutate original array
-  let arrClone = Array.prototype.slice.call(authorsArray); // in case not an array;
+  if (Array.isArray(authorsArray)) {
+    arrClone = Array.prototype.slice.call(authorsArray); // in case not an array;
+  }
+  else return authorsArray;
 
   let authorsLength = arrClone.length;
   if (authorsLength > 2) {
-    arrClone.join(', ');
-    arrClone[arrClone.length - 1] = 'and' + arrClone[arrClone.length - 1];
-    return arrClone;
+    arrClone[arrClone.length - 1] = 'and ' + arrClone[arrClone.length - 1];
+    return arrClone.join(', ');
   }
   else if (authorsLength > 1) {
     return arrClone.join(' and ');
   }
   else return arrClone[0];
+}
+
+function saveBookToSwap (book) {
+  console.log(book);
 }

@@ -100,10 +100,23 @@ module.exports = io => {
 
     // search request from client
     socket.on('READ.bookshelves.query', data => {
-      Book.find({ $or: [{ ISBN_10: data.search },
-                                { ISBN_13: data.search },
-                                { title: { $regex: data.search, $options: 'i' } },
-                                { author: { $regex: data.search, $options: 'i' } }] })
+      let dbQuery;
+
+      if (data.request) { // if the source of the query was from the request path
+        dbQuery = { $and: [ { currentOwner: { $ne: userID } },
+                            { $or: [{ ISBN_10: data.search },
+                                    { ISBN_13: data.search },
+                                    { title: { $regex: data.search, $options: 'i' } },
+                                    { author: { $regex: data.search, $options: 'i' } }] } ]};
+      }
+      else {
+        dbQuery = { $or: [{ ISBN_10: data.search },
+                          { ISBN_13: data.search },
+                          { title: { $regex: data.search, $options: 'i' } },
+                          { author: { $regex: data.search, $options: 'i' } }] };
+      }
+
+      Book.find(dbQuery)
           .sort({ dateAdded: -1 })
           .exec((err, books) => {
         if (err) throw err;
@@ -113,7 +126,7 @@ module.exports = io => {
         else {
           socket.emit('READ.bookshelves.query.render', { query: data.search, books: books });
         }
-      });
+      });  
     });
 
     // search request from client

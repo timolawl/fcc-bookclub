@@ -6,6 +6,7 @@
   &--request {
     &__selection {
       @include setWrapper(0, true);
+      padding: 0 3rem;
       display: flex;
       align-items: center;
       justify-content: center;

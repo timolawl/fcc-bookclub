@@ -15,14 +15,7 @@ const bookSchema = new mongoose.Schema({
   ISBN_13         : { type: String },
   dateAdded       : { type: Date, default: Date.now, required: true },
   currentOwner    : { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  tradeRequest    : { requester: { type: Schema.Types.ObjectId, ref: 'User' },
-                      offering: { type: Schema.Types.ObjectId, ref: 'Book' } },
-  completedTrades : [ { transaction: {
-                         requester: { type: Schema.Types.ObjectId, ref: 'User' },
-                         offering: { type: Schema.Types.ObjectId, ref: 'Book' },
-                         requestee: { type: Schema.Types.ObjectId, ref: 'User' },
-                         dateOfSwap: { type: Date, required: true }
-                    } } ]
+  transactionLock : { type: Boolean, default: false, required: true }
 });
 
 module.exports = mongoose.model('Book', bookSchema);
