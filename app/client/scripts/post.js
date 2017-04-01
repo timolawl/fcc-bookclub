@@ -210,7 +210,26 @@ window.onload = function () {
 
   }
 
+/********************************************/
+  
+  if (location.pathname.match(/^\/pending\/?$/i)) {
+    socket.emit('READ.transactions', {});
+
+    socket.on('READ.transactions.render', data => {
+      
+    });
+
+    // when others request a book from user or when user requests a book on a different tab
+    //socket.on('UPDATE.transactions.render'
+  }
+
+
 };
+
+
+
+
+
 
 /*******************************************/
 
@@ -269,19 +288,31 @@ function displayPreview (data, source) {
   function createBook () {
     socket.emit('CREATE.book', bookObject);
     // cleanup - otherwise it will keep adding the first book
-    document.querySelector('.preview__submit').removeEventListener('click', createBook);
+ //   document.querySelector('.preview__submit').removeEventListener('click', createBook);
+    document.querySelector('.preview__submit').classList.add('is-not-displayed');
   }
 
-
   if (source === 'external-query') { // google api
+
+    // remove any lingering click event listeners from multiple external searches
+
     let json = data;
 
     console.log('external query');
 
+    // problem is what happens when some fields are not available, such as thumbnail?
+    //
+    console.log(json.items[0]);
+
+    // check each to prevent error message (currently only using for thumbnail)
+    
     bookObject.title = json.items[0].volumeInfo.title;
     bookObject.author = json.items[0].volumeInfo.authors;
     bookObject.description = json.items[0].volumeInfo.description;
-    bookObject.thumbnail = json.items[0].volumeInfo.imageLinks.thumbnail;
+
+    bookObject.thumbnail = checkProperty(json.items[0], 'volumeInfo.imageLinks.thumbnail');
+
+    //bookObject.thumbnail = json.items[0].volumeInfo.imageLinks.thumbnail;
     bookObject.link = json.items[0].volumeInfo.canonicalVolumeLink;
     json.items[0].volumeInfo.industryIdentifiers.forEach(id => {
       if (id.type === 'ISBN_10')
@@ -290,27 +321,27 @@ function displayPreview (data, source) {
         bookObject.ISBN_13 = id.identifier;
     });
 
-
     document.querySelector('.preview__submit').classList.remove('is-not-displayed');
 
-    document.querySelector('.preview__submit').addEventListener('click', createBook);
+    document.querySelector('.preview__submit').onclick = createBook;
   }
   else {
+    // assign to bookObject so that displaying the preview works regardless of source of query
     bookObject.title = data.title;
     bookObject.author = data.author;
     bookObject.description = data.description;
     bookObject.link = data.link;
 
-    if (source === 'internal-query') {
+    if (source === 'internal-query') { // db search for book (non-request path)
       // remove the add button - internal source means the display preview is generated from a
       // click of one of the book images
       if (document.querySelector('.preview__submit')) {
-        document.querySelector('.preview__submit').removeEventListener('click', createBook);
+       // document.querySelector('.preview__submit').removeEventListener('click', createBook);
         // hide the icon as well.
         document.querySelector('.preview__submit').classList.add('is-not-displayed');
       }
     }
-    else if (source === 'internal-request') {
+    else if (source === 'internal-request') { // request section
       if (document.querySelector('.request__section--one .request__step-number').classList.contains('request__step-number--incomplete')) {
         requestSection = document.querySelector('.request__section--one');
         currentStep = 'one';
@@ -333,6 +364,10 @@ function displayPreview (data, source) {
         requestSection.querySelector('.request__selection__book-image .book__image').src = data.thumbnail;
 
 
+        
+       // requestSection.querySelector('.wrapper--request__selection').setAttribute('data-id', data._id);
+
+
         requestSection.querySelector('.wrapper--request__selection').classList.remove('is-not-displayed');
 
         requestSection.querySelector('.request__step-number').classList.remove('request__step-number--incomplete');
@@ -343,17 +378,22 @@ function displayPreview (data, source) {
           // bring up step two
           requestSection.querySelector('.Request').classList.add('is-not-displayed');
           document.querySelector('.request__section--two').classList.remove('is-not-displayed');
-          saveBookToSwap(data, 'request'); // should only get the book id
+          //saveBookToSwap(data, 'request'); // should only get the book id
+          document.querySelector('form').elements['requestId'].value = data._id;
         }
         else if (currentStep === 'two') {
           // birng up step three
           requestSection.querySelector('.Offer').classList.add('is-not-displayed');
           document.querySelector('.request__section--three').classList.remove('is-not-displayed');
-          saveBookToSwap(data, 'offer');
+          document.querySelector('form').elements['offerId'].value = data._id;
+          //saveBookToSwap(data, 'offer');
 
-          document.querySelector('.request__button--swap').addEventListener('click', e => {
+          //document.querySelector('.request__button--swap').addEventListener('click', e => {
+            
+            
+
             //socket.emit('CREATE.transaction', { 
-          });
+          //});
           
           // take out cancel - MVP
           /*
@@ -373,23 +413,9 @@ function displayPreview (data, source) {
 
   requestSection.querySelector('.preview__title').textContent = bookObject.title;
   requestSection.querySelector('.preview__link').href = bookObject.link;
-
-  //let authorsString = parseAuthorArray(bookObject.author);
-/*
-  let authorsLength = bookObject.author.length;
-  let authorsArray = bookObject.author;
-  if (authorsLength > 2) {
-    let lastAuthor = 
-    authorsArray[authorsArray.length - 1] = 'and ' +
-      authorsArray[authorsArray.length - 1];
-    requestSection.querySelector('.preview__author').textContent = authorsArray.join(', ');;
-  }
-  else if (authorsLength > 1) {
-    requestSection.querySelector('.preview__author').textContent = authorsArray.join(' and ');
-  }
-  else requestSection.querySelector('.preview__author').textContent = authorsArray[0];
-
-  */
+  requestSection.querySelector('.preview__close').addEventListener('click', () => {
+    requestSection.querySelector('.wrapper--preview').classList.add('is-not-displayed');
+  }); 
 
   requestSection.querySelector('.preview__author').textContent = parseAuthorArray(bookObject.author);
 
@@ -417,21 +443,21 @@ function displayBook (book, queryEvent, requestSection) {
 
   // on click shows the preview for the book
   newDiv.addEventListener('click', e => {
-    //console.log(book);
+    console.log(book);
     socket.emit('READ.book', { bookId: book._id });
     
   });
 
   fragment.appendChild(newDiv);
   if (queryEvent) {
-    if (requestSection) 
-      requestSection.querySelector('.bookshelf--query').appendChild(fragment);
-    else document.querySelector('.bookshelf--query').appendChild(fragment);
+    if (requestSection)
+      prependChild(requestSection.querySelector('.bookshelf--query'), fragment);
+    else prependChild(document.querySelector('.bookshelf--query'), fragment);
   }
   else {
     if (requestSection)
-      requestSection.querySelector('.bookshelf--complete').appendChild(fragment);
-    else document.querySelector('.bookshelf--complete').appendChild(fragment);
+      prependChild(requestSection.querySelector('.bookshelf--complete'), fragment);
+    else prependChild(document.querySelector('.bookshelf--complete'), fragment);
   }
 
 }
@@ -515,6 +541,34 @@ function parseAuthorArray (authorsArray) {
   else return arrClone[0];
 }
 
+/**************************************************/
+
+
+/*
+ *
 function saveBookToSwap (book) {
   console.log(book);
+}
+*/
+
+
+// recursively check object property existence before querying it (specifically used in looking up thumbnail currently)
+function checkProperty (object, pathToKey) {
+  let keyDepth = pathToKey.split('.').length;
+  let currentKey = pathToKey.split('.')[0];
+  // let restOfKey = ;
+  
+  if (object.hasOwnProperty(currentKey)) {
+    if (keyDepth > 1) {
+      return checkProperty(object[currentKey], pathToKey.split('.').slice(1).join('.'));
+    }
+    else return object[pathToKey];
+  }
+  else return 'http://placehold.it/128x200';
+}
+
+
+// prepend function
+function prependChild (parent, newFirstChild) {
+  parent.insertBefore(newFirstChild, parent.firstChild);
 }

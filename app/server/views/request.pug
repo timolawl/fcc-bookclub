@@ -2,6 +2,8 @@ include /includes/header.pug
 //
   .page-title: span Request
 include /includes/mixins/search-preview-bookshelf.pug
+- if (message.length)
+  .message.message--request= message
 .subsection.request__section--one
   .subsection__title
     .request__step-number.request__step-number--incomplete 1
@@ -35,7 +37,10 @@ include /includes/mixins/search-preview-bookshelf.pug
     .request__step-number.request__step-number--incomplete 3
     span Confirm
   .wrapper--request__confirm
-    button.request__button--swap(type='submit') Request Swap
+    form(method='POST')
+      input(type='hidden' name='requestId' pattern='^[0-9a-f]{24}$')
+      input(type='hidden' name='offerId' pattern='^[0-9a-f]{24}$')
+      button.request__button--swap(type='submit' formaction='/request') Request Swap
   //
     button.request__button--cancel(type='button') Cancel
 include /includes/footer.pug

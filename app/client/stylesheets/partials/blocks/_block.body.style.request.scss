@@ -20,6 +20,10 @@
   }
 }
 
+.message--request {
+  padding: 1rem 0;
+}
+
 .request {
   &__step-number { // text styling of the request step numbers
     display: inline-block;

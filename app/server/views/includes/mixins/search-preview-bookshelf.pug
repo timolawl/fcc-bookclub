@@ -21,6 +21,7 @@ mixin spb(buttonLabel)
       .preview__description
       if buttonLabel
         button.preview__submit(type='button')= buttonLabel
+      button.preview__close(type='button') &#10005;
     .wrapper--bookshelf.bookshelf--complete
     .wrapper--query.is-not-displayed
       .query__description 

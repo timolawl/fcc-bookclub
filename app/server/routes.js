@@ -14,7 +14,6 @@ module.exports = (app, passport) => {
            else res.render('index', { path: 'index' });
         });
 
-
     app.route('/signup') // this allows for the question mark path.
         // any other path should disconnect the user from any previous room, as they are not needed.
         .get(isNotLoggedIn, (req, res) => {
@@ -66,14 +65,20 @@ module.exports = (app, passport) => {
 
     app.route('/request')
       .get(isLoggedIn, (req, res) => {
-        res.render('request', { loggedIn: 'true', path: 'request' });
-      });
+        res.render('request', { loggedIn: 'true', path: 'request', message: req.flash('processRequestError') }); // need message here?
+      })
+
+      .post(isLoggedIn, controller.processRequest);
+
 
     app.route('/pending')
+      .get(isLoggedIn, controller.getPending);
+  /*
       .get(isLoggedIn, (req, res) => {
         res.render('pending', { loggedIn: 'true', path: 'pending' });
       });
-
+      */
+      
     app.route('/completed')
       .get(isLoggedIn, (req, res) => {
         res.render('completed', { loggedIn: 'true', path: 'completed' });
@@ -82,7 +87,7 @@ module.exports = (app, passport) => {
     app.route('/settings')
       .get(isLoggedIn, controller.getSettings)
   
-      .post(isLoggedIn, controller.saveSettings);
+      .post(isLoggedIn, controller.postSettings);
         
 
 /*

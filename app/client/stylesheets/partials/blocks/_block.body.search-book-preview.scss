@@ -9,6 +9,7 @@
 
 .wrapper--preview {
   @include setWrapper(1rem, true);
+  //padding-top: 4rem; // space for the close button
   margin-top: 0;
   border-top: none;
   text-align: center;
@@ -70,6 +71,11 @@
 }
 
 .preview {
+
+  &__link {
+    display: inline-block;
+  }
+
   &__title {
     text-align: center;
     font-weight: bold;
@@ -86,14 +92,26 @@
     margin-bottom: 1rem;
   }
 
+  /*
   &__permalink {
     font-size: 0.9rem;
     text-align: left;
     font-weight: bold;
   }
+  */
 
   &__submit {
     @include setButton();
   }
-  
+
+  &__close {
+    border: 1px solid map-get($color-stack, font__link--base);
+    height: 2rem;
+    width: 2rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    //transform: translateY(-50%);
+    @include setBgColorAndHover();
+  }
 }

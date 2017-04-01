@@ -3,9 +3,113 @@
 //const uuid = require('node-uuid'); // nonce creation
 
 const User = require('../models/user');
+const Book = require('../models/book');
+const Transaction = require('../models/transaction');
 
 
 function controller () {
+
+  this.processRequest = (req, res) => {
+
+    // CREATE.transaction
+
+    let requestValidated = false;
+
+    function renderRequestPageWithErrorMessage () {
+      req.flash('processRequestError', 'An error occurred processing your request.');
+      res.render('request', { loggedIn: 'true', path: 'request', message: req.flash('processRequestError') });
+    }
+
+    console.log(req.body);
+    // validate request
+    // req.body.requestId / req.body.offerId
+    // 1. check validity of the id:
+    let re = /^[0-9a-f]{24}$/;
+    if (re.test(req.body.requestId) && re.test(req.body.offerId)) { // qualifies as mongodb id
+      // look up the offer Id to see if it belongs to the current user
+      //
+      console.log('good up to here!');
+      
+      Book.findOne({ _id: req.body.offerId }).exec((err, offeredBook) => {
+
+        console.log('plz');
+        console.log(offeredBook.currentOwner);
+        console.log(req.user.id);
+        console.log(offeredBook.transactionLock);
+
+
+        if (err) throw err;
+        if (!offeredBook) { // book doesn't even exist with this id
+          console.log('No such book under this id exists');
+        }
+        else if (offeredBook.currentOwner.toString() === req.user.id && !offeredBook.transactionLock) { // book found and belongs to req user and is not locked for swapping
+          // check other book
+          console.log('checkpoint 2!');
+          return Book.findOne({ _id: req.body.requestId }).exec((err, requestedBook) => {
+            if (err) throw err;
+            if (!requestedBook) {
+              console.log('No such book under this id exists.');
+            }
+            else if (!requestedBook.transactionLock) { // not locked for swapping
+              // everything good! make a transaction request!
+              console.log('made it this far?!');
+              let newTransaction = new Transaction();
+              newTransaction.requester = offeredBook.currentOwner;
+              newTransaction.bookRequested = requestedBook;
+              newTransaction.requestee = requestedBook.currentOwner;
+              newTransaction.bookOffered = offeredBook;
+              newTransaction.dateOfRequest = Date.now();
+              return newTransaction.save(err => {
+                if (err) throw err;
+                requestedBook.transactionLock = true; // lock the books!
+                return requestedBook.save(err => {
+                  if (err) throw err;
+                  offeredBook.transactionLock = true;
+                  return offeredBook.save(err => {
+                    console.log('hello!');
+                    if (err) throw err;
+                    requestValidated = true;
+                    res.redirect('/pending'); // redirect user to pending
+                  });
+                });
+              });
+            }
+          });
+        }
+      })
+      .then(() => {
+        if (!requestValidated) { // if at any step the request validation messed up:
+          renderRequestPageWithErrorMessage();
+        }
+      });
+    }
+    else renderRequestPageWithErrorMessage();
+
+
+      
+
+    // we're given two book ids
+
+    // if valid, then process request and redirect the user to their pending transactions
+    
+    // if not valid, return the user to the request page with a flash message of the error
+  
+   
+  };
+
+  
+  this.getPending = (req, res) => {
+    // load all pending transactions involving the user:
+    // 'Books I want' - user is the requester
+    Transaction.find({ requester: req.user.id }).exec((err, transactions) => {
+      
+    });
+  };
+
+
+
+
+
   this.getSettings = (req, res) => {
     // find user in db
     //console.log(req.user.id);
@@ -36,7 +140,7 @@ function controller () {
     // load user info into the render
   };
 
-  this.saveSettings = (req, res) => {
+  this.postSettings = (req, res) => {
 
     // if information is the same, do nothing but reload the page and say that it has been saved
     //
@@ -69,7 +173,6 @@ function controller () {
         });
       }
     });
-
 
     req.flash('settingsMessage', 'Personal information has been updated!');
     res.render('userform', { loggedIn: 'true', path: 'settings', userInfo: sanitizedBody, message: req.flash('settingsMessage') });
