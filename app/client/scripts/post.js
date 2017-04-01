@@ -73,18 +73,22 @@ window.onload = function () {
   }
 
   if (location.pathname.match(/^\/allbookshelves\/?$/i)) {
+
+    socket = io('/allbookshelves'); // change socket name space
+
     socket.on('CREATE.book.render', data => {
       // add book to the front of the book list
       displayBook(data.book, false);
 
     });
 
-    socket.emit('READ.bookshelves.all', {});
-
     socket.on('READ.book.render', data => {
       displayPreview(data.book, 'internal-query');
     });
 
+    socket.emit('READ.bookshelves.all', {});
+
+    
     socket.on('READ.bookshelves.all.render', data => {
       // display all books in order:
       for (let i = 0; i < data.books.length; i++) {
@@ -111,16 +115,18 @@ window.onload = function () {
 /************************************************************/
 
   if (location.pathname.match(/^\/mybookshelf\/?$/i)) {
+
+    socket = io('/mybookshelf');
+
     socket.on('CREATE.book.render', data => {
       displayBook(data.book, false);
     });
-
-    socket.emit('READ.bookshelf.all', {});
 
     socket.on('READ.book.render', data => {
       displayPreview(data.book, 'internal-query');
     });
 
+    socket.emit('READ.bookshelf.all', {});    
 
     socket.on('READ.bookshelf.all.render', data => {
       for (let i = 0; i < data.books.length; i++) {
@@ -179,6 +185,8 @@ window.onload = function () {
 /********************************************/
 
   if (location.pathname.match(/^\/request\/?$/i)) {
+
+    socket = io('/request');
 
     socket.on('READ.book.render', data => {
       displayPreview(data.book, 'internal-request');
@@ -377,16 +385,15 @@ function displayPreview (data, source) {
         if (currentStep === 'one') {
           // bring up step two
           requestSection.querySelector('.Request').classList.add('is-not-displayed');
+          document.querySelector('form').elements['requestId'].value = data._id;
           document.querySelector('.request__section--two').classList.remove('is-not-displayed');
           //saveBookToSwap(data, 'request'); // should only get the book id
-          document.querySelector('form').elements['requestId'].value = data._id;
         }
         else if (currentStep === 'two') {
           // birng up step three
           requestSection.querySelector('.Offer').classList.add('is-not-displayed');
-          document.querySelector('.request__section--three').classList.remove('is-not-displayed');
           document.querySelector('form').elements['offerId'].value = data._id;
-          //saveBookToSwap(data, 'offer');
+          document.querySelector('.request__section--three').classList.remove('is-not-displayed');
 
           //document.querySelector('.request__button--swap').addEventListener('click', e => {
             

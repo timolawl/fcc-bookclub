@@ -2,7 +2,7 @@
 
 const Controller = require('./controllers/controller');
 
-module.exports = (app, passport) => {
+module.exports = (app, passport, io) => {
 
     const controller = new Controller();
 
@@ -41,13 +41,10 @@ module.exports = (app, passport) => {
             req.logout();
             res.redirect('/');
         });
-/*
-    app.route('/reset')
-        .get((req, res) => {
-            res.render('userform', { path: 'reset' });
-        });
-*/
+
     app.route('/allbookshelves')
+      .get(controller.getAllBookshelves(io));
+  /*
       .get((req, res) => {
 //      .get(isLoggedIn, (req, res) => {
           // no need to join a socket room here because at this page, nothing will change at this level
@@ -55,21 +52,32 @@ module.exports = (app, passport) => {
           res.render('allbookshelves', { loggedIn: 'true', path: 'allbookshelves' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
         else res.render('allbookshelves', { loggedIn: 'false', path: 'allbookshelves' });
       });
+      */
 
     app.route('/mybookshelf')
+      .get(isLoggedIn, controller.getMyBookshelf(io));
+
+  /*
       .get(isLoggedIn, (req, res) => {
 //      .get(isLoggedIn, (req, res) => {
           // no need to join a socket room here because at this page, nothing will change at this level
         res.render('mybookshelf', { loggedIn: 'true', path: 'mybookshelf' }); // use index? again, using loggedIn for setting the right nav bar, but there could be a cleaner way of doing this.
       });
+      */
+
+
 
     app.route('/request')
+      .get(isLoggedIn, controller.getRequest(io))
+      
+      .post(isLoggedIn, controller.postRequest(io));
+  /*
       .get(isLoggedIn, (req, res) => {
         res.render('request', { loggedIn: 'true', path: 'request', message: req.flash('processRequestError') }); // need message here?
       })
 
-      .post(isLoggedIn, controller.processRequest);
-
+      .post(isLoggedIn, controller.postRequest(io));
+*/
 
     app.route('/pending')
       .get(isLoggedIn, controller.getPending);

@@ -2,15 +2,10 @@
 
 const mongoose = require('mongoose');
 
-const Book = require('../models/book');
+const Book = require('../../../models/book');
 
-module.exports = io => {
-
-  // acting as route and controller here.
-  // the structured formatting would help for sure..
-  
-
-  io.on('connection', function (socket) {
+function onConnect (namespace) {
+  return function (socket) {
     // this only works if the user is already registered and logged in:
     let userID;
 
@@ -52,9 +47,9 @@ module.exports = io => {
         //
         socketBook._id = newBook._id;
 
-        //socket.of(
+        socket.of(namespace).emit('CREATE.book.render', { book: socketBook });
 
-        socket.to('allbookshelves').emit('CREATE.book.render', { book: socketBook });
+        //socket.to('allbookshelves').emit('CREATE.book.render', { book: socketBook });
         // if the user is the same as the submitter, add it to his or her bookshelf
         // check for room, if user is in my
         socket.emit('CREATE.book.render', { book: socketBook });
@@ -178,5 +173,7 @@ module.exports = io => {
       // hence, an update will consist of adding the new book at the front
       // and removing the old element.
     });   
-  });
-};
+  }
+}
+
+module.exports = onConnect;

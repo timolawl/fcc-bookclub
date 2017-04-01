@@ -7,9 +7,28 @@ const Book = require('../models/book');
 const Transaction = require('../models/transaction');
 
 
+// individual path controllers
+const AllbookshelvesPathController = require('./imports/allbookshelves');
+const MybookshelfPathController = require('./imports/mybookshelf');
+const RequestPathController = require('./imports/request');
+
+
 function controller () {
 
-  this.processRequest = (req, res) => {
+  const allbookshelvesPathController = new AllbookshelvesPathController();
+  const mybookshelfPathController = new MybookshelfPathController();
+  const requestPathController = new RequestPathController();
+
+  this.getAllBookshelves = allbookshelvesPathController.getAllBookshelves;
+
+  this.getMyBookshelf = mybookshelfPathController.getMyBookshelf;
+
+  this.getRequest = requestPathController.getRequest;
+  this.postRequest = requestPathController.postRequest;
+
+
+/*
+  this.postRequest = (req, res) => {
 
     // CREATE.transaction
 
@@ -97,7 +116,7 @@ function controller () {
    
   };
 
-  
+  */
   this.getPending = (req, res) => {
     // load all pending transactions involving the user:
     // 'Books I want' - user is the requester
