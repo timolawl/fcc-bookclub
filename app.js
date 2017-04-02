@@ -49,7 +49,7 @@ mongoose.connection.on('error', () => {
 
 
 require('./app/server/controllers/middlewares/passport')(passport); // pass passport for configuration.
-// require('./app/server/controllers/socketio')(io); // pass socketio for config?
+require('./app/server/controllers/socketio')(io); // pass socketio for config?
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, '/app/server/views'));

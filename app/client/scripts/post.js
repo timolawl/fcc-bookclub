@@ -74,7 +74,7 @@ window.onload = function () {
 
   if (location.pathname.match(/^\/allbookshelves\/?$/i)) {
 
-    socket = io('/allbookshelves'); // change socket name space
+  //  socket = io('/allbookshelves'); // change socket name space
 
     socket.on('CREATE.book.render', data => {
       // add book to the front of the book list
@@ -91,6 +91,7 @@ window.onload = function () {
     
     socket.on('READ.bookshelves.all.render', data => {
       // display all books in order:
+      console.log(data.books.length);
       for (let i = 0; i < data.books.length; i++) {
         displayBook(data.books[i], false);
       }
@@ -110,13 +111,17 @@ window.onload = function () {
       renderQuery(data);
     });
 
+    socket.on('CREATE.transaction.render', data => {
+      console.log('worky?!');
+    });
+
   }
 
 /************************************************************/
 
   if (location.pathname.match(/^\/mybookshelf\/?$/i)) {
 
-    socket = io('/mybookshelf');
+  //  socket = io('/mybookshelf');
 
     socket.on('CREATE.book.render', data => {
       displayBook(data.book, false);
@@ -180,13 +185,19 @@ window.onload = function () {
     socket.on('READ.bookshelf.query.render', data => {
       renderQuery(data);
     });
+
+
+    socket.on('CREATE.transaction.render', data => {
+      console.log('worky?! bookshelf');
+    });
+
   }
 
 /********************************************/
 
   if (location.pathname.match(/^\/request\/?$/i)) {
 
-    socket = io('/request');
+   // socket = io('/request');
 
     socket.on('READ.book.render', data => {
       displayPreview(data.book, 'internal-request');
@@ -207,7 +218,7 @@ window.onload = function () {
     // Step 2: query bookshelf
     document.querySelector('.request__section--two .search__bar__submit').addEventListener('click', e => {
       let userInput = document.querySelector('.request__section--two .search__bar__input').value;
-      socket.emit('READ.bookshelf.query', { search: userInput.replace(/\$/g, '') });
+      socket.emit('READ.bookshelf.query', { search: userInput.replace(/\$/g, ''), request: true });
     });
 
     socket.on('READ.bookshelf.query.render', data => {
@@ -215,20 +226,42 @@ window.onload = function () {
     });
 
     // Step 3: confirm step
+    //
+    socket.on('CREATE.transaction.render', data => {
+      console.log('worky?! request');
+      console.log(data);
+    });
+
 
   }
 
 /********************************************/
   
   if (location.pathname.match(/^\/pending\/?$/i)) {
-    socket.emit('READ.transactions', {});
+    socket.emit('READ.transactions.pending', {});
 
-    socket.on('READ.transactions.render', data => {
-      
+    socket.on('READ.transactions.pending.render', data => {
+      populateTransactions(data, 'pending');
+      console.log(data);
     });
+
+    socket.on('CREATE.transaction.render', data => {
+      console.log('worky?! pending');
+      console.log(data);
+    });
+
 
     // when others request a book from user or when user requests a book on a different tab
     //socket.on('UPDATE.transactions.render'
+  }
+
+
+  if (location.pathname.match(/^\/complete\/?$/i)) {
+    socket.emit('READ.transactions.complete', {});
+
+    socket.on('READ.transactions.complete.render', data => {
+    
+    });
   }
 
 
@@ -395,12 +428,17 @@ function displayPreview (data, source) {
           document.querySelector('form').elements['offerId'].value = data._id;
           document.querySelector('.request__section--three').classList.remove('is-not-displayed');
 
-          //document.querySelector('.request__button--swap').addEventListener('click', e => {
-            
+          // confirm swap
+          /*
+          document.querySelector('.request__button--swap').addEventListener('click', e => {
+            // gather together the hidden input
+            let requestId = document.querySelector('form').elements['requestId'].value;
+            let offerId = document.querySelector('form').elements['offerId'].value;
             
 
-            //socket.emit('CREATE.transaction', { 
-          //});
+            socket.emit('CREATE.transaction', { rId: requestId, oId: offerId });
+          });
+          */
           
           // take out cancel - MVP
           /*
@@ -439,14 +477,30 @@ function displayPreview (data, source) {
 function displayBook (book, queryEvent, requestSection) {
   let fragment = new DocumentFragment();
   // mvp - img and data.id
+  
+  // book image
   let newImg = document.createElement('img');
   newImg.classList.add('book__image');
   newImg.src = book.thumbnail;
 
+
+  // book container
   let newDiv = document.createElement('div');
   newDiv.classList.add('book');
-  newDiv.classList.add('data-id=' + book._id);
-  newDiv.appendChild(newImg);
+  //newDiv.classList.add('data-id=' + book._id);
+  newDiv.appendChild(newImg);  // book image
+
+  console.log(book.transactionLock);
+
+  // svg lock container
+  if (book.transactionLock) {
+    let newImg2 = document.createElement('img');
+    newImg2.classList.add('book__lock');
+    newImg2.src = '/static/img/lock.svg';
+    newDiv.appendChild(newImg2); // svg lock
+  }
+
+
 
   // on click shows the preview for the book
   newDiv.addEventListener('click', e => {
@@ -574,8 +628,134 @@ function checkProperty (object, pathToKey) {
   else return 'http://placehold.it/128x200';
 }
 
+/***********************************************/
 
 // prepend function
 function prependChild (parent, newFirstChild) {
   parent.insertBefore(newFirstChild, parent.firstChild);
+}
+
+
+/***********************************************/
+
+
+function populateTransactions (data, path) {
+
+  let booksIWantFragment = new DocumentFragment(); // append to self-desired
+  let booksOthersWantFragment = new DocumentFragment(); // apend to other-desired
+
+  for (let i = 0; i < data.requestTransactions.length; i++) {
+    booksIWantFragment.appendChild(displayTransaction(data.requestTransactions[i], 'request', path));
+  }
+  for (let i = 0; i < data.offerTransactions.length; i++) {
+    booksOthersWantFragment.appendChild(displayTransaction(data.offerTransactions[i], 'offer', path));
+  }
+
+  document.querySelector('.self-desired').appendChild(booksIWantFragment);
+  document.querySelector('.other-desired').appendChild(booksOthersWantFragment);
+
+}
+
+
+/***********************************************/
+
+function displayTransaction (transaction, transactionType, path) {
+
+  let newTradeDiv = createTradeDiv();  
+
+  if (transactionType === 'request') {
+    newTradeDiv.querySelector('.book--self-owned').firstChild.src = transaction.oBook.thumbnail;
+    newTradeDiv.querySelector('.book--other-owned').firstChild.src = transaction.rBook.thumbnail;
+  }
+  else if (transactionType === 'offer') {
+    newTradeDiv.querySelector('.book--self-owned').firstChild.src = transaction.rBook.thumbnail;
+    newTradeDiv.querySelector('.book--other-owned').firstChild.src = transaction.oBook.thumbnail;
+  }
+
+  if (path === 'pending') {
+    if (transactionType === 'request') {
+      // set description
+      newTradeDiv.querySelector('.trade__description').textContent = `You have requested to trade your copy of ${transaction.oBook.title} for another user's copy of ${transaction.rBook.title}.`;
+      // set arrow 
+      newTradeDiv.querySelector('.arrow').firstChild.classList.add('arrow-right');
+      newTradeDiv.querySelector('.arrow').firstChild.src = '/static/img/arrow-right-pending.svg';
+    }
+    else if (transactionType === 'offer') {
+      newTradeDiv.querySelector('.trade__description').textContent = `Another user has requested to trade their copy of ${transaction.oBook.title} for your copy of ${transaction.rBook.title}.`;
+      newTradeDiv.querySelector('.arrow').firstChild.classList.add('arrow-left');
+      newTradeDiv.querySelector('.arrow').firstChild.src = '/static/img/arrow-left-pending.svg';
+      let tradeBtns = document.createElement('div');
+      tradeBtns.classList.add('trade__buttons');
+      let tradeBtnApprove = document.createElement('button');
+      tradeBtnApprove.classList.add('trade__button');
+      tradeBtnApprove.classList.add('trade__button--approve');
+      tradeBtnApprove.textContent = 'Approve';
+      let tradeBtnDecline = document.createElement('button');
+      tradeBtnDecline.classList.add('trade__button');
+      tradeBtnDecline.classList.add('trade__button--decline');
+      tradeBtnDecline.textContent = 'Decline';
+      tradeBtns.appendChild(tradeBtnApprove);
+      tradeBtns.appendChild(tradeBtnDecline);
+      newTradeDiv.querySelector('.trade').appendChild(tradeBtns);
+    }
+  }
+  else if (path === 'completed') {
+    if (transactionType === 'request') {
+      newTradeDiv.querySelector('.trade__description').textContent = `You have traded your copy of ${transaction.oBook.title} for another user's copy of ${transaction.rBook.title}.`;
+      newTradeDiv.querySelector('.arrow').firstChild.classList.add('arrow-right');
+      newTradeDiv.querySelector('.arrow').firstChild.src = '/static/img/arrow-right-completed';
+    }
+    else if (transactionType === 'offer') {
+      newTradeDiv.querySelector('.trade__description').textContent = `Another user has traded their copy of ${transaction.oBook.title} for your copy of ${transaction.rBook.title}.`;
+      newTradeDiv.querySelector('.arrow').firstChild.classList.add('arrow-left');
+      newTradeDiv.querySelector('.arrow').firstChild.src = '/static/img/arrow-left-completed';
+    }
+  }
+
+  return newTradeDiv;
+}
+
+
+function createTradeDiv () {
+
+  let fragment = new DocumentFragment();
+
+  let tradeDiv = document.createElement('div');
+  tradeDiv.classList.add('trade');
+  fragment.appendChild(tradeDiv);
+
+  let descDiv = document.createElement('div');
+  descDiv.classList.add('trade__description');
+  tradeDiv.appendChild(descDiv);
+
+  let pictoDiv = document.createElement('div');
+  pictoDiv.classList.add('trade__pictogram');
+  tradeDiv.appendChild(pictoDiv);
+
+  let bookSelfOwnedDiv = document.createElement('div');
+  bookSelfOwnedDiv.classList.add('book--self-owned');
+  pictoDiv.appendChild(bookSelfOwnedDiv);
+
+  let bookSelfOwnedImg = document.createElement('img');
+  bookSelfOwnedImg.classList.add('book__image');
+  bookSelfOwnedDiv.appendChild(bookSelfOwnedImg);
+
+  let arrowDiv = document.createElement('div');
+  arrowDiv.classList.add('arrow');
+  pictoDiv.appendChild(arrowDiv);
+
+  let arrowImg = document.createElement('img');
+  arrowDiv.appendChild(arrowImg);
+
+  let bookOtherOwnedDiv = document.createElement('div');
+  bookOtherOwnedDiv.classList.add('book--other-owned');
+  pictoDiv.appendChild(bookOtherOwnedDiv);
+
+  let bookOtherOwnedImg = document.createElement('img');
+  bookOtherOwnedImg.classList.add('book__image');
+  bookOtherOwnedDiv.appendChild(bookOtherOwnedImg);
+
+  return fragment;
+  
+
 }

@@ -31,6 +31,14 @@
   &__image {
     display: block; // get rid of white space below images
   }
+
+  &__lock {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 24px;
+    width: 24px;
+  }
 }
 
 .no-result {

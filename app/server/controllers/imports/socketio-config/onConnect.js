@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const Book = require('../../../models/book');
 
 function onConnect (namespace) {
+  console.log('what is going on?!');
+  console.log(namespace);
   return function (socket) {
     // this only works if the user is already registered and logged in:
     let userID;
@@ -13,6 +15,9 @@ function onConnect (namespace) {
       userID = socket.request.session.passport.user;
     }
 
+    console.log('hi o hi, connecting from: ' + namespace);
+
+/*
     // socket rooms
     socket.on('leave room', function (data) {
       if (socket.room !== undefined)
@@ -25,6 +30,7 @@ function onConnect (namespace) {
       socket.room = data.room;
       socket.join(socket.room);
     });
+    */
 
     socket.on('CREATE.book', data => {
       // add current userID to the book just generated and save to books collection
@@ -53,6 +59,7 @@ function onConnect (namespace) {
         // if the user is the same as the submitter, add it to his or her bookshelf
         // check for room, if user is in my
         socket.emit('CREATE.book.render', { book: socketBook });
+        socket.off('CREATE.book');
       });
     });
 
@@ -81,12 +88,15 @@ function onConnect (namespace) {
 
     // population request from client
     socket.on('READ.bookshelves.all', data => {
+
+      console.log('READ.bookshelves.all ' + namespace);
+
       // retrieve all books sorted by date added and return
       Book.find({}).sort({ dateAdded: 1 }).exec((err, books) => {
         if (err) throw err;
         if (!books) console.log('no books!');
         else {
-          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail }});
+          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail, transactionLock: book.transactionLock }});
           socket.emit('READ.bookshelves.all.render', { books: socketBooks });
         }
       });
@@ -99,7 +109,7 @@ function onConnect (namespace) {
         if (!books) console.log('no books here!');
         else {
           // pass only needed information: img thumbnail and book id:
-          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail }});
+          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail, transactionLock: book.transactionLock }});
           socket.emit('READ.bookshelf.all.render', { books: socketBooks });
         }
       });
@@ -132,7 +142,7 @@ function onConnect (namespace) {
         }
         else {
           // pass only needed information: img thumbnail and book id:
-          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail }});
+          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail, transactionLock: book.transactionLock }});
           socket.emit('READ.bookshelves.query.render', { query: data.search, books: socketBooks });
         }
       });  
@@ -153,11 +163,20 @@ function onConnect (namespace) {
         }
         else {
           // pass only needed information: img thumbnail and book id:
-          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail }});
+          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail, transactionLock: book.transactionLock }});
           socket.emit('READ.bookshelf.query.render', { query: data.search, books: socketBooks });
         }
       });
     });
+
+
+    /*
+    socket.on('CREATE.transaction', data => {
+      
+    });
+    */
+
+
 
     // successful swap -> bookshelves will need to display the swapped books ability
     // to take swap requests

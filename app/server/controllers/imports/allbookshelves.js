@@ -7,12 +7,16 @@ const Book = require('../../models/book');
 const onConnect = require('./socketio-config/onConnect'); // socket io config
 
 function allbookshelves () {
-  this.getAllBookshelves = io => {
+  this.getAllBookshelves = function (io) {
     return function (req, res) {
+
+      console.log('all bookshelves called!');
 
       if (req.isAuthenticated())
         res.render('allbookshelves', { loggedIn: 'true', path: 'allbookshelves' });
       else res.render('allbookshelves', { loggedIn: 'false', path: 'allbookshelves' });
+
+      //io.off();
 
       io.of('/allbookshelves')
         .on('connection', onConnect('/allbookshelves'));

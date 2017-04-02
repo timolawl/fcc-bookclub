@@ -3,6 +3,7 @@
 const mongoose = require('mongoose');
 
 const Book = require('../models/book');
+const Transaction = require('../models/transaction');
 
 module.exports = io => {
 
@@ -91,7 +92,7 @@ module.exports = io => {
         if (err) throw err;
         if (!books) console.log('no books!');
         else {
-          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail }});
+          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail, transactionLock: book.transactionLock }});
           socket.emit('READ.bookshelves.all.render', { books: socketBooks });
         }
       });
@@ -104,7 +105,7 @@ module.exports = io => {
         if (!books) console.log('no books here!');
         else {
           // pass only needed information: img thumbnail and book id:
-          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail }});
+          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail, transactionLock: book.transactionLock }});
           socket.emit('READ.bookshelf.all.render', { books: socketBooks });
         }
       });
@@ -116,6 +117,7 @@ module.exports = io => {
 
       if (data.request) { // if the source of the query was from the request path
         dbQuery = { $and: [ { currentOwner: { $ne: userID } },
+                            { transactionLock: false },
                             { $or: [{ ISBN_10: data.search },
                                     { ISBN_13: data.search },
                                     { title: { $regex: data.search, $options: 'i' } },
@@ -137,7 +139,7 @@ module.exports = io => {
         }
         else {
           // pass only needed information: img thumbnail and book id:
-          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail }});
+          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail, transactionLock: book.transactionLock }});
           socket.emit('READ.bookshelves.query.render', { query: data.search, books: socketBooks });
         }
       });  
@@ -145,11 +147,26 @@ module.exports = io => {
 
     // search request from client
     socket.on('READ.bookshelf.query', data => {
-      Book.find({ $and: [ { currentOwner: userID },
+      let dbQuery;
+
+      if (data.request) {
+        dbQuery = { $and: [ { currentOwner: userID },
+                            { transactionLock: false },
                             { $or: [{ ISBN_10: data.search },
                                     { ISBN_13: data.search },
                                     { title: { $regex: data.search, $options: 'i' } },
-                                    { author: { $regex: data.search, $options: 'i' } }] } ]})
+                                    { author: { $regex: data.search, $options: 'i' } }] } ]};
+      }
+      else {
+        dbQuery = { $and: [ { currentOwner: userID },
+                            { $or: [{ ISBN_10: data.search },
+                                    { ISBN_13: data.search },
+                                    { title: { $regex: data.search, $options: 'i' } },
+                                    { author: { $regex: data.search, $options: 'i' } }] } ]};
+
+      }
+
+      Book.find(dbQuery)
           .sort({ dateAdded: -1 })
           .exec((err, books) => {
         if (err) throw err;
@@ -158,11 +175,38 @@ module.exports = io => {
         }
         else {
           // pass only needed information: img thumbnail and book id:
-          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail }});
+          let socketBooks = books.map(book => { return { _id: book._id, thumbnail: book.thumbnail, transactionLock: book.transactionLock }});
           socket.emit('READ.bookshelf.query.render', { query: data.search, books: socketBooks });
         }
       });
     });
+
+
+    socket.on('READ.transactions.pending', data => {
+
+      // load all pending transactions involving the user:
+      // 'Books I want' - user is the requester
+      Transaction.find({ requester: userID }).sort({ dateOfRequest: 1 }).exec().then(rTransactions => {
+        Transaction.find({ requestee: userID }).sort({ dateOfRequest: 1 }).exec().then(oTransactions => {
+
+
+          // need book images and titles for request transactions
+          let rTrans = rTransactions.map(rTransaction => { return { oBook: { thumbnail: rTransaction.bookOfferedThumbnail, title: rTransaction.bookOfferedTitle }, rBook: { thumbnail: rTransaction.bookRequestedThumbnail, title: rTransaction.bookRequestedTitle } } });
+
+          // need book images, book ids, and titles for approving offer transactions
+          let oTrans = oTransactions.map(oTransaction => { return { oBook: { thumbnail: oTransaction.bookOfferedThumbnail, _id: oTransaction.bookOfferedId, title: oTransaction.bookOfferedTitle }, rBook: { thumbnail: oTransaction.bookRequestedThumbnail, _id: oTransaction.bookRequestedId, title: oTransaction.bookRequestedTitle } }});
+
+          socket.emit('READ.transactions.pending.render', { requestTransactions: rTrans, offerTransactions: oTrans });
+        });
+      });
+
+    });
+
+    socket.on('READ.transactions.complete', data => {
+      // pull up all complete transactions
+    });
+
+
 
     // successful swap -> bookshelves will need to display the swapped books ability
     // to take swap requests

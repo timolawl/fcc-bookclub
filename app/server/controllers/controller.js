@@ -8,13 +8,13 @@ const Transaction = require('../models/transaction');
 
 
 // individual path controllers
-const AllbookshelvesPathController = require('./imports/allbookshelves');
-const MybookshelfPathController = require('./imports/mybookshelf');
-const RequestPathController = require('./imports/request');
+//const AllbookshelvesPathController = require('./imports/allbookshelves');
+//const MybookshelfPathController = require('./imports/mybookshelf');
+//const RequestPathController = require('./imports/request');
 
 
 function controller () {
-
+/*
   const allbookshelvesPathController = new AllbookshelvesPathController();
   const mybookshelfPathController = new MybookshelfPathController();
   const requestPathController = new RequestPathController();
@@ -25,87 +25,103 @@ function controller () {
 
   this.getRequest = requestPathController.getRequest;
   this.postRequest = requestPathController.postRequest;
+*/
 
 
-/*
-  this.postRequest = (req, res) => {
+  //this.postRequest = (req, res) => {
 
-    // CREATE.transaction
+  this.postRequest = io => {
 
-    let requestValidated = false;
+    return (req, res) => {
 
-    function renderRequestPageWithErrorMessage () {
-      req.flash('processRequestError', 'An error occurred processing your request.');
-      res.render('request', { loggedIn: 'true', path: 'request', message: req.flash('processRequestError') });
-    }
+      // CREATE.transaction
 
-    console.log(req.body);
-    // validate request
-    // req.body.requestId / req.body.offerId
-    // 1. check validity of the id:
-    let re = /^[0-9a-f]{24}$/;
-    if (re.test(req.body.requestId) && re.test(req.body.offerId)) { // qualifies as mongodb id
-      // look up the offer Id to see if it belongs to the current user
-      //
-      console.log('good up to here!');
-      
-      Book.findOne({ _id: req.body.offerId }).exec((err, offeredBook) => {
+      let requestValidated = false;
 
-        console.log('plz');
-        console.log(offeredBook.currentOwner);
-        console.log(req.user.id);
-        console.log(offeredBook.transactionLock);
+      function renderRequestPageWithErrorMessage () {
+        console.log('render request page error');
+        req.flash('processRequestError', 'An error occurred processing your request.');
+        res.render('request', { loggedIn: 'true', path: 'request', message: req.flash('processRequestError') });
+      }
+
+      // validate request
+      // req.body.requestId / req.body.offerId
+      // 1. check validity of the id:
+      let re = /^[0-9a-f]{24}$/;
+      if (re.test(req.body.requestId) && re.test(req.body.offerId)) { // qualifies as mongodb id
+        // look up the offer Id to see if it belongs to the current user
+        Book.findOne({ _id: req.body.offerId }).exec().then(offeredBook => {
+
+          if (!offeredBook) { // book doesn't even exist with this id
+            console.log('No such book under this id exists');
+          }
+          else if (offeredBook.currentOwner.toString() === req.user.id && !offeredBook.transactionLock) { // book found and belongs to req user and is not locked for swapping
+            // check other book
+            return Book.findOne({ _id: req.body.requestId }).exec().then(requestedBook => {
+              if (!requestedBook) {
+                console.log('No such book under this id exists.');
+              }
+              else if (!requestedBook.transactionLock) { // not locked for swapping
+                // everything good! make a transaction request!
+                let newTransaction = new Transaction();
+                newTransaction.requester = offeredBook.currentOwner;
+                newTransaction.bookRequestedId = requestedBook._id;
+                newTransaction.bookRequestedThumbnail = requestedBook.thumbnail;
+                newTransaction.bookRequestedTitle = requestedBook.title;
+                newTransaction.requestee = requestedBook.currentOwner;
+                newTransaction.bookOfferedId = offeredBook._id;
+                newTransaction.bookOfferedThumbnail = offeredBook.thumbnail;
+                newTransaction.bookOfferedTitle = offeredBook.title;
+                newTransaction.dateOfRequest = Date.now();
+
+                requestedBook.transactionLock = true;
+                offeredBook.transactionLock = true;
+
+                let p1 = newTransaction.save();
+                let p2 = requestedBook.save();
+                let p3 = offeredBook.save();
 
 
-        if (err) throw err;
-        if (!offeredBook) { // book doesn't even exist with this id
-          console.log('No such book under this id exists');
-        }
-        else if (offeredBook.currentOwner.toString() === req.user.id && !offeredBook.transactionLock) { // book found and belongs to req user and is not locked for swapping
-          // check other book
-          console.log('checkpoint 2!');
-          return Book.findOne({ _id: req.body.requestId }).exec((err, requestedBook) => {
-            if (err) throw err;
-            if (!requestedBook) {
-              console.log('No such book under this id exists.');
-            }
-            else if (!requestedBook.transactionLock) { // not locked for swapping
-              // everything good! make a transaction request!
-              console.log('made it this far?!');
-              let newTransaction = new Transaction();
-              newTransaction.requester = offeredBook.currentOwner;
-              newTransaction.bookRequested = requestedBook;
-              newTransaction.requestee = requestedBook.currentOwner;
-              newTransaction.bookOffered = offeredBook;
-              newTransaction.dateOfRequest = Date.now();
-              return newTransaction.save(err => {
-                if (err) throw err;
-                requestedBook.transactionLock = true; // lock the books!
-                return requestedBook.save(err => {
-                  if (err) throw err;
-                  offeredBook.transactionLock = true;
-                  return offeredBook.save(err => {
-                    console.log('hello!');
-                    if (err) throw err;
+
+                return Promise.all([p1, p2, p3])
+                  .then(() => {
                     requestValidated = true;
-                    res.redirect('/pending'); // redirect user to pending
+                  });
+
+                /*
+                return newTransaction.save(err => {
+                  if (err) throw err;
+                  requestedBook.transactionLock = true; // lock the books!
+                  return requestedBook.save(err => {
+                    if (err) throw err;
+                    offeredBook.transactionLock = true;
+                    return offeredBook.save(err => {
+                      console.log('hello!');
+                      if (err) throw err;
+                      return requestValidated = true;
+                    });
                   });
                 });
-              });
-            }
-          });
-        }
-      })
-      .then(() => {
-        if (!requestValidated) { // if at any step the request validation messed up:
-          renderRequestPageWithErrorMessage();
-        }
-      });
+                */
+              }
+            });
+          }
+        })
+        .then(() => {
+          if (!requestValidated) { // if at any step the request validation messed up:
+            renderRequestPageWithErrorMessage();
+          }
+          else {
+            // this socket emission doesn't work --- hangs the program
+            //io.sockets.emit('CREATE.transaction.render', { rBookId: requestedBook._id, oBookId: offeredBook._id });
+            res.redirect('/pending'); // redirect user to pending
+          }
+        });
+      }
+      else renderRequestPageWithErrorMessage();
+
     }
-    else renderRequestPageWithErrorMessage();
 
-
-      
 
     // we're given two book ids
 
@@ -116,15 +132,12 @@ function controller () {
    
   };
 
-  */
+  /*
   this.getPending = (req, res) => {
-    // load all pending transactions involving the user:
-    // 'Books I want' - user is the requester
-    Transaction.find({ requester: req.user.id }).exec((err, transactions) => {
-      
-    });
-  };
 
+    res.render('pending', { loggedIn: 'true', path: 'pending' });
+  };
+*/
 
 
 
