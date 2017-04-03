@@ -648,7 +648,7 @@ function checkProperty (object, pathToKey) {
     }
     else return object[pathToKey];
   }
-  else return 'http://placehold.it/128x200';
+  else return 'https://placehold.it/128x200';
 }
 
 /***********************************************/

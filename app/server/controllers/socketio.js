@@ -40,7 +40,8 @@ module.exports = io => {
       newBook.title = data.title;
       newBook.author = data.author;
       newBook.description = data.description;
-      newBook.thumbnail = socketBook.thumbnail = data.thumbnail;
+      const thumbnailStr = data.thumbnail.replace(/^(http):/, '$1s:');
+      newBook.thumbnail = socketBook.thumbnail = thumbnailStr; // data.thumbnail;
       newBook.link = data.link;
       newBook.ISBN_10 = data.ISBN_10 || '';
       newBook.ISBN_13 = data.ISBN_13 || '';
