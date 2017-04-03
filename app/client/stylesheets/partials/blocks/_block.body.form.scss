@@ -9,7 +9,7 @@
 
 .form {
   width: 80%;
-  max-width: 960px;
+  max-width: $max-width;
   margin: 0 auto;
 
   &__label {

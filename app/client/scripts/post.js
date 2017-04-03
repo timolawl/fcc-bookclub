@@ -59,6 +59,8 @@ window.onload = function () {
     socket.emit('leave room', { path: location.pathname.toLowerCase().slice(1) });
     */
 
+  
+
 /****************/    
 
   if (location.pathname.match(/^\/$/)) {
@@ -91,14 +93,19 @@ window.onload = function () {
     
     socket.on('READ.bookshelves.all.render', data => {
       // display all books in order:
-      console.log(data.books.length);
       for (let i = 0; i < data.books.length; i++) {
         displayBook(data.books[i], false);
       }
     });
 
-    socket.on('UPDATE.bookshelves.render', data => {
-      
+    // from tranaction updates
+    socket.on('UPDATE.books.render', data => {
+      Array.prototype.forEach.call(document.querySelectorAll('.book'), book => {
+        let bookId = book.getAttribute('data-id');
+        if (bookId === data.book1 || bookId === data.book2 ) {
+          book.removeChild(book.querySelector('book__lock'));
+        }
+      });
     });
 
     // socket.emit -> READ.bookshelf.query
@@ -111,9 +118,10 @@ window.onload = function () {
       renderQuery(data);
     });
 
+    /*
     socket.on('CREATE.transaction.render', data => {
-      console.log('worky?!');
     });
+    */
 
   }
 
@@ -139,10 +147,15 @@ window.onload = function () {
       }
     });
 
-    socket.on('UPDATE.bookshelf.render', data => {
-      // add newly created book to the bookshelf
-      // remove old book
-      
+
+    // from transaction updates
+    socket.on('UPDATE.books.render', data => {
+      Array.prototype.forEach.call(document.querySelectorAll('.book'), book => {
+        let bookId = book.getAttribute('data-id');
+        if (bookId === data.book1 || bookId === data.book2 ) {
+          book.removeChild(book.querySelector('book__lock'));
+        }
+      });
     });
 
 
@@ -187,9 +200,10 @@ window.onload = function () {
     });
 
 
+    /*
     socket.on('CREATE.transaction.render', data => {
-      console.log('worky?! bookshelf');
     });
+    */
 
   }
 
@@ -227,10 +241,12 @@ window.onload = function () {
 
     // Step 3: confirm step
     //
+    /*
     socket.on('CREATE.transaction.render', data => {
-      console.log('worky?! request');
-      console.log(data);
     });
+    */
+
+  
 
 
   }
@@ -242,26 +258,44 @@ window.onload = function () {
 
     socket.on('READ.transactions.pending.render', data => {
       populateTransactions(data, 'pending');
-      console.log(data);
     });
 
+    /*
     socket.on('CREATE.transaction.render', data => {
-      console.log('worky?! pending');
-      console.log(data);
+    });
+    */
+
+
+    // from transaction updates
+    socket.on('UPDATE.transactions.render', data => {
+      let query = `'[data-id="${data.transaction}"]'`;
+      if(document.querySelector(query)) {
+        document.querySelector(query).parentNode.removeChild(document.querySelector(query));
+      }
     });
 
 
+
+    
+    
     // when others request a book from user or when user requests a book on a different tab
     //socket.on('UPDATE.transactions.render'
   }
 
 
-  if (location.pathname.match(/^\/complete\/?$/i)) {
+  if (location.pathname.match(/^\/completed\/?$/i)) {
     socket.emit('READ.transactions.complete', {});
 
     socket.on('READ.transactions.complete.render', data => {
-    
+      populateTransactions(data, 'completed');
     });
+
+    /*
+    socket.on('UPDATE.transactions.render', data => {
+      // add the new transaction
+    });
+    */
+
   }
 
 
@@ -339,12 +373,7 @@ function displayPreview (data, source) {
 
     let json = data;
 
-    console.log('external query');
-
     // problem is what happens when some fields are not available, such as thumbnail?
-    //
-    console.log(json.items[0]);
-
     // check each to prevent error message (currently only using for thumbnail)
     
     bookObject.title = json.items[0].volumeInfo.title;
@@ -386,15 +415,13 @@ function displayPreview (data, source) {
       if (document.querySelector('.request__section--one .request__step-number').classList.contains('request__step-number--incomplete')) {
         requestSection = document.querySelector('.request__section--one');
         currentStep = 'one';
-        console.log('previewing step one!');
       }
       else if (document.querySelector('.request__section--two .request__step-number').classList.contains('request__step-number--incomplete')) {
         requestSection = document.querySelector('.request__section--two');
         currentStep = 'two';
-        console.log('previewing step two!');
       }
       else {
-        console.log('something went wrong..');
+        console.log('This should never happen...');
       }
 
       requestSection.querySelector('.preview__submit').addEventListener('click', e => {
@@ -488,9 +515,8 @@ function displayBook (book, queryEvent, requestSection) {
   let newDiv = document.createElement('div');
   newDiv.classList.add('book');
   //newDiv.classList.add('data-id=' + book._id);
+  newDiv.setAttribute('data-id', book._id);
   newDiv.appendChild(newImg);  // book image
-
-  console.log(book.transactionLock);
 
   // svg lock container
   if (book.transactionLock) {
@@ -504,7 +530,6 @@ function displayBook (book, queryEvent, requestSection) {
 
   // on click shows the preview for the book
   newDiv.addEventListener('click', e => {
-    console.log(book);
     socket.emit('READ.book', { bookId: book._id });
     
   });
@@ -537,7 +562,6 @@ function renderQuery (data, requestStep) {
     requestSection = document.querySelector('.request__section--one');
    }
   else if (requestStep === 'step-two') {
-    console.log('rendering query for step two');
     requestSection = document.querySelector('.request__section--two');
   }
   else requestSection = document;
@@ -605,14 +629,6 @@ function parseAuthorArray (authorsArray) {
 /**************************************************/
 
 
-/*
- *
-function saveBookToSwap (book) {
-  console.log(book);
-}
-*/
-
-
 // recursively check object property existence before querying it (specifically used in looking up thumbnail currently)
 function checkProperty (object, pathToKey) {
   let keyDepth = pathToKey.split('.').length;
@@ -645,10 +661,10 @@ function populateTransactions (data, path) {
   let booksOthersWantFragment = new DocumentFragment(); // apend to other-desired
 
   for (let i = 0; i < data.requestTransactions.length; i++) {
-    booksIWantFragment.appendChild(displayTransaction(data.requestTransactions[i], 'request', path));
+    booksIWantFragment.insertBefore(displayTransaction(data.requestTransactions[i], 'request', path), booksIWantFragment.firstChild);
   }
   for (let i = 0; i < data.offerTransactions.length; i++) {
-    booksOthersWantFragment.appendChild(displayTransaction(data.offerTransactions[i], 'offer', path));
+    booksOthersWantFragment.insertBefore(displayTransaction(data.offerTransactions[i], 'offer', path), booksOthersWantFragment.firstChild);
   }
 
   document.querySelector('.self-desired').appendChild(booksIWantFragment);
@@ -662,6 +678,8 @@ function populateTransactions (data, path) {
 function displayTransaction (transaction, transactionType, path) {
 
   let newTradeDiv = createTradeDiv();  
+
+  //newTradeDiv.querySelector('.trade').setAttribute('data-id', transaction._id);
 
   if (transactionType === 'request') {
     newTradeDiv.querySelector('.book--self-owned').firstChild.src = transaction.oBook.thumbnail;
@@ -697,18 +715,34 @@ function displayTransaction (transaction, transactionType, path) {
       tradeBtns.appendChild(tradeBtnApprove);
       tradeBtns.appendChild(tradeBtnDecline);
       newTradeDiv.querySelector('.trade').appendChild(tradeBtns);
+      // need to set up these approve/decine buttons
+      tradeBtnApprove.addEventListener('click', () => {
+        // retrieve the transaction number and book ids
+        // remove entire entry and move it to the complete section
+        //let transaction
+        socket.emit('DELETE.transaction', { _id: transaction._id, option: 'approve' });
+
+        // 'UPDATE.books.render' - since DELETE.transaction needs to validate before updating
+        //socket.emit('UPDATE.books', { // add the completed transaction to the books; remove locks
+        tradeBtnApprove.parentNode.parentNode.parentNode.removeChild(tradeBtnApprove.parentNode.parentNode);
+      });
+      tradeBtnDecline.addEventListener('click', () => {
+        socket.emit('DELETE.transaction', { _id: transaction._id, option: 'decline' });
+        //socket.emit('UPDATE.books', { // remove locks
+        tradeBtnDecline.parentNode.parentNode.parentNode.removeChild(tradeBtnDecline.parentNode.parentNode);
+      });
     }
   }
   else if (path === 'completed') {
     if (transactionType === 'request') {
       newTradeDiv.querySelector('.trade__description').textContent = `You have traded your copy of ${transaction.oBook.title} for another user's copy of ${transaction.rBook.title}.`;
       newTradeDiv.querySelector('.arrow').firstChild.classList.add('arrow-right');
-      newTradeDiv.querySelector('.arrow').firstChild.src = '/static/img/arrow-right-completed';
+      newTradeDiv.querySelector('.arrow').firstChild.src = '/static/img/arrow-right-completed.svg';
     }
     else if (transactionType === 'offer') {
       newTradeDiv.querySelector('.trade__description').textContent = `Another user has traded their copy of ${transaction.oBook.title} for your copy of ${transaction.rBook.title}.`;
       newTradeDiv.querySelector('.arrow').firstChild.classList.add('arrow-left');
-      newTradeDiv.querySelector('.arrow').firstChild.src = '/static/img/arrow-left-completed';
+      newTradeDiv.querySelector('.arrow').firstChild.src = '/static/img/arrow-left-completed.svg';
     }
   }
 

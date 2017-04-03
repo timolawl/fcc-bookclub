@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 
 const Book = require('../models/book');
 const Transaction = require('../models/transaction');
+const CompletedTransaction = require('../models/completedtransaction');
 
 module.exports = io => {
 
@@ -78,8 +79,6 @@ module.exports = io => {
           socketBook.description = book.description;
           socketBook.thumbnail = book.thumbnail; // request preview picture
 
-          //console.log(data.bookId);
-          //console.log(book);
           socket.emit('READ.book.render', { book: socketBook });
         }
       });
@@ -189,12 +188,12 @@ module.exports = io => {
       Transaction.find({ requester: userID }).sort({ dateOfRequest: 1 }).exec().then(rTransactions => {
         Transaction.find({ requestee: userID }).sort({ dateOfRequest: 1 }).exec().then(oTransactions => {
 
-
           // need book images and titles for request transactions
-          let rTrans = rTransactions.map(rTransaction => { return { oBook: { thumbnail: rTransaction.bookOfferedThumbnail, title: rTransaction.bookOfferedTitle }, rBook: { thumbnail: rTransaction.bookRequestedThumbnail, title: rTransaction.bookRequestedTitle } } });
+          // will also need id or some form for when it gets approved and socket pushes msg
+          let rTrans = rTransactions.map(rTransaction => { return { _id: rTransaction._id, oBook: { thumbnail: rTransaction.bookOfferedThumbnail, title: rTransaction.bookOfferedTitle }, rBook: { thumbnail: rTransaction.bookRequestedThumbnail, title: rTransaction.bookRequestedTitle } } });
 
           // need book images, book ids, and titles for approving offer transactions
-          let oTrans = oTransactions.map(oTransaction => { return { oBook: { thumbnail: oTransaction.bookOfferedThumbnail, _id: oTransaction.bookOfferedId, title: oTransaction.bookOfferedTitle }, rBook: { thumbnail: oTransaction.bookRequestedThumbnail, _id: oTransaction.bookRequestedId, title: oTransaction.bookRequestedTitle } }});
+          let oTrans = oTransactions.map(oTransaction => { return { _id: oTransaction._id, oBook: { thumbnail: oTransaction.bookOfferedThumbnail, title: oTransaction.bookOfferedTitle }, rBook: { thumbnail: oTransaction.bookRequestedThumbnail, title: oTransaction.bookRequestedTitle } }});
 
           socket.emit('READ.transactions.pending.render', { requestTransactions: rTrans, offerTransactions: oTrans });
         });
@@ -204,6 +203,60 @@ module.exports = io => {
 
     socket.on('READ.transactions.complete', data => {
       // pull up all complete transactions
+      CompletedTransaction.find({ requester: userID }).sort({ dateOfSwap: 1 }).exec().then(rTransactions => {
+        CompletedTransaction.find({ requestee: userID }).sort({ dateOfSwap: 1 }).exec().then(oTransactions => {
+
+          // need book images and titles for request transactions
+          // will also need id or some form for when it gets approved and socket pushes msg
+          let rTrans = rTransactions.map(rTransaction => { return { oBook: { thumbnail: rTransaction.bookOfferedThumbnail, title: rTransaction.bookOfferedTitle }, rBook: { thumbnail: rTransaction.bookRequestedThumbnail, title: rTransaction.bookRequestedTitle } } });
+
+          // need book images, book ids, and titles for approving offer transactions
+          let oTrans = oTransactions.map(oTransaction => { return { oBook: { thumbnail: oTransaction.bookOfferedThumbnail, title: oTransaction.bookOfferedTitle }, rBook: { thumbnail: oTransaction.bookRequestedThumbnail, title: oTransaction.bookRequestedTitle } }});
+
+          socket.emit('READ.transactions.complete.render', { requestTransactions: rTrans, offerTransactions: oTrans });
+        });
+      });
+    });
+
+
+    
+    socket.on('DELETE.transaction', data => {
+      Transaction.findOne({ _id: data._id }).then(transaction => {
+        if (!transaction) console.error('Transaction not found.');
+        if (transaction.requestee.toString() === userID) {
+
+          Book.findOne({ _id: transaction.bookRequestedId }).exec().then(rBook => {
+            Book.findOne({ _id: transaction.bookOfferedId }).exec().then(oBook => {
+
+              if (data.option === 'approve') {
+                const newCompletedTransaction = new CompletedTransaction(transaction);
+
+                newCompletedTransaction.save();
+
+                let tempOwner = rBook.currentOwner;
+                rBook.currentOwner = oBook.currentOwner;
+                oBook.currentOwner = tempOwner;
+              }
+              rBook.transactionLock = false;
+              oBook.transactionLock = false;
+              let p1 = rBook.save();
+              let p2 = oBook.save();
+              let p3 = Transaction.deleteOne({ _id: data._id }).exec();
+              Promise.all([p1, p2, p3])
+                .then(() => {
+                  // update all with these two released books
+                  socket.to('allbookshelves').emit('UPDATE.books.render', { book1: rBook._id, book2: oBook._id });
+                  socket.to('mybookshelf').emit('UPDATE.books.render', { book1: rBook._id, book2: oBook._id });
+                  socket.to('pending').emit('UPDATE.transactions.render', { transaction: data._id });
+                  
+                  // this requires having the client socket id and transmitting it to only the other person involved in the swap
+                  //socket.to('complete').emit('UPDATE.transactions.render', { transaction: data._id });
+                });
+
+            });
+          });
+        }
+      });
     });
 
 
