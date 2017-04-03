@@ -1,7 +1,7 @@
 mixin spb(buttonLabel)
   section(class=buttonLabel)
     .wrapper--search
-      .wrapper__subwrapper--search 
+      form.wrapper__subwrapper--search 
         if path == 'allbookshelves'
           label.search__bar.search__bar__label Search
           input.search__bar.search__bar__input.search__bar__input--allbookshelves
@@ -13,7 +13,7 @@ mixin spb(buttonLabel)
         if path == 'request'
           label.search__bar.search__bar__label Search
           input.search__bar.search__bar__input
-        button.search__bar.search__bar__submit(type='button') Submit
+        button.search__bar.search__bar__submit(type='submit') Submit
     .wrapper--preview.is-not-displayed
       a.preview__link
         .preview__title

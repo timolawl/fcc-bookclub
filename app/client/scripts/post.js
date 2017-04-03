@@ -109,10 +109,14 @@ window.onload = function () {
     });
 
     // socket.emit -> READ.bookshelf.query
-    document.querySelector('.search__bar__submit').addEventListener('click', e => {
+    document.querySelector('form').addEventListener('submit', e => {
+      e.preventDefault();
       let userInput = document.querySelector('.search__bar__input--allbookshelves').value;
         socket.emit('READ.bookshelves.query', { search: userInput.replace(/\$/g, '') });
     });
+
+    // allow pressing enter to trigger submit as well when input is selected
+    //document.querySelector('.search__bar__input--allowbookshelves').addEventListener(
 
     socket.on('READ.bookshelves.query.render', data => {
       renderQuery(data);
@@ -161,7 +165,8 @@ window.onload = function () {
 
     // add -> CREATE.book
     // find -> READ.bookshelf.query
-    document.querySelector('.search__bar__submit').addEventListener('click', e => {
+    document.querySelector('form').addEventListener('submit', e => {
+      e.preventDefault();
       // check the select option first
       let selectOption = document.querySelector('.search__bar__option').value;
       let userInput = document.querySelector('.search__bar__input--mybookshelf').value;
@@ -220,7 +225,8 @@ window.onload = function () {
 
     // Step 1: query bookshelves
     // socket.emit -> READ.bookshelves.query
-    document.querySelector('.request__section--one .search__bar__submit').addEventListener('click', e => {
+    document.querySelector('.request__section--one form').addEventListener('submit', e => {
+      e.preventDefault();
       let userInput = document.querySelector('.request__section--one .search__bar__input').value;
       socket.emit('READ.bookshelves.query', { search: userInput.replace(/\$/g, ''), request: true }); // specify that it is from the request path, and thus will not display own books
     });
@@ -230,7 +236,8 @@ window.onload = function () {
     });
 
     // Step 2: query bookshelf
-    document.querySelector('.request__section--two .search__bar__submit').addEventListener('click', e => {
+    document.querySelector('.request__section--two form').addEventListener('submit', e => {
+      e.preventDefault();
       let userInput = document.querySelector('.request__section--two .search__bar__input').value;
       socket.emit('READ.bookshelf.query', { search: userInput.replace(/\$/g, ''), request: true });
     });
@@ -445,14 +452,14 @@ function displayPreview (data, source) {
         if (currentStep === 'one') {
           // bring up step two
           requestSection.querySelector('.Request').classList.add('is-not-displayed');
-          document.querySelector('form').elements['requestId'].value = data._id;
+          document.querySelector('.form--swap').elements['requestId'].value = data._id;
           document.querySelector('.request__section--two').classList.remove('is-not-displayed');
           //saveBookToSwap(data, 'request'); // should only get the book id
         }
         else if (currentStep === 'two') {
           // birng up step three
           requestSection.querySelector('.Offer').classList.add('is-not-displayed');
-          document.querySelector('form').elements['offerId'].value = data._id;
+          document.querySelector('.form--swap').elements['offerId'].value = data._id;
           document.querySelector('.request__section--three').classList.remove('is-not-displayed');
 
           // confirm swap

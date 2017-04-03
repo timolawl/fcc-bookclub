@@ -37,7 +37,7 @@ include /includes/mixins/search-preview-bookshelf.pug
     .request__step-number.request__step-number--incomplete 3
     span Confirm
   .wrapper--request__confirm
-    form(method='POST')
+    form.form--swap(method='POST')
       input(type='hidden' name='requestId' pattern='^[0-9a-f]{24}$')
       input(type='hidden' name='offerId' pattern='^[0-9a-f]{24}$')
       button.request__button--swap(type='submit' formaction='/request') Request Swap
