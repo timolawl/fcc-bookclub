@@ -28,11 +28,11 @@ function controller () {
 */
 
 
-  //this.postRequest = (req, res) => {
+  this.postRequest = (req, res) => {
 
-  this.postRequest = io => {
+  //this.postRequest = io => {
 
-    return (req, res) => {
+  //  return (req, res) => {
 
       // CREATE.transaction
 
@@ -120,8 +120,6 @@ function controller () {
       }
       else renderRequestPageWithErrorMessage();
 
-    }
-
 
     // we're given two book ids
 
@@ -129,18 +127,7 @@ function controller () {
     
     // if not valid, return the user to the request page with a flash message of the error
   
-   
   };
-
-  /*
-  this.getPending = (req, res) => {
-
-    res.render('pending', { loggedIn: 'true', path: 'pending' });
-  };
-*/
-
-
-
 
   this.getSettings = (req, res) => {
     // find user in db

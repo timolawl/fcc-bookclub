@@ -2,7 +2,7 @@
 
 const Controller = require('./controllers/controller');
 
-module.exports = (app, passport, io) => {
+module.exports = (app, passport) => {
 
     const controller = new Controller();
 
@@ -76,7 +76,7 @@ module.exports = (app, passport, io) => {
         res.render('request', { loggedIn: 'true', path: 'request', message: req.flash('processRequestError') }); // need message here?
       })
 
-      .post(isLoggedIn, controller.postRequest(io));
+      .post(isLoggedIn, controller.postRequest);
 
 
     app.route('/pending')

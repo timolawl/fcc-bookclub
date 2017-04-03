@@ -31,7 +31,6 @@
     "mongoose": "^4.9.1",
     "morgan": "^1.8.1",
     "neverbounce": "^0.2.3",
-    "node-fetch": "^1.6.3",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "pug": "^2.0.0-beta11",
