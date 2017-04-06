@@ -648,7 +648,7 @@ function checkProperty (object, pathToKey) {
     }
     else return object[pathToKey];
   }
-  else return 'https://placehold.it/128x200';
+  else return '/static/img/placeholder.png';  //'http://placehold.it/128x200';
 }
 
 /***********************************************/
